@@ -1,0 +1,30 @@
+@import "tailwindcss";
+
+* {
+  box-sizing: border-box;
+}
+
+body {
+  background-color: #f8fafc;
+  color: #111827;
+}
+
+input, select, textarea {
+  color: #111827 !important;
+  background-color: #ffffff !important;
+}
+
+input::placeholder, textarea::placeholder {
+  color: #9ca3af !important;
+  opacity: 1 !important;
+}
+
+select option {
+  color: #111827;
+  background-color: #ffffff;
+}
+
+.page-bg {
+  background: linear-gradient(135deg, #f0fdf4 0%, #f8fafc 50%, #eff6ff 100%);
+  min-height: 100vh;
+}
