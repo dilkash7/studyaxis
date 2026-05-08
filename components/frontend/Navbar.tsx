@@ -6,6 +6,7 @@ import { useRouter } from 'next/navigation';
 import axios from 'axios';
 
 export default function Navbar() {
+  const [mounted, setMounted] = useState(false);
   const [open, setOpen] = useState(false);
   const [searchQuery, setSearchQuery] = useState('');
   const [showSearch, setShowSearch] = useState(false);
@@ -13,6 +14,7 @@ export default function Navbar() {
   const router = useRouter();
 
   useEffect(() => {
+    setMounted(true);
     axios.get('/api/settings/homepage').then(r => setSettings(r.data)).catch(() => {});
   }, []);
 
@@ -24,6 +26,25 @@ export default function Navbar() {
       setSearchQuery('');
     }
   };
+
+  // Prevent hydration mismatch: render a stable skeleton on server
+  if (!mounted) {
+    return (
+      <nav className="bg-white shadow-sm sticky top-0 z-50">
+        <div className="max-w-7xl mx-auto px-4 h-16 flex items-center justify-between gap-4">
+          <Link href="/" className="flex items-center gap-2 shrink-0">
+            <span className="text-2xl font-bold text-green-600">StudyAxis</span>
+          </Link>
+          <div className="hidden md:flex items-center gap-4">
+            <Link href="/" className="text-gray-600 hover:text-green-600 font-medium transition text-sm">Home</Link>
+            <Link href="/college-finder" className="text-gray-600 hover:text-green-600 font-medium transition text-sm">🎓 Find College</Link>
+            <Link href="/india" className="text-gray-600 hover:text-green-600 font-medium transition text-sm">India</Link>
+            <Link href="/abroad" className="text-gray-600 hover:text-green-600 font-medium transition text-sm">Abroad</Link>
+          </div>
+        </div>
+      </nav>
+    );
+  }
 
   return (
     <nav className="bg-white shadow-sm sticky top-0 z-50">
@@ -47,6 +68,7 @@ export default function Navbar() {
 
         <div className="hidden md:flex items-center gap-4">
           <Link href="/" className="text-gray-600 hover:text-green-600 font-medium transition text-sm">Home</Link>
+          <Link href="/college-finder" className="text-gray-600 hover:text-green-600 font-medium transition text-sm">🎓 Find College</Link>
           <Link href="/india" className="text-gray-600 hover:text-green-600 font-medium transition text-sm">India</Link>
           <Link href="/abroad" className="text-gray-600 hover:text-green-600 font-medium transition text-sm">Abroad</Link>
           <Link href="/apply" className="text-gray-600 hover:text-green-600 font-medium transition text-sm">Apply</Link>
@@ -83,6 +105,7 @@ export default function Navbar() {
         <div className="md:hidden bg-white border-t px-4 py-4 space-y-2">
           {[
             { href: '/', label: 'Home' },
+            { href: '/college-finder', label: '🎓 Find Your College' },
             { href: '/india', label: 'Study in India' },
             { href: '/abroad', label: 'Study Abroad' },
             { href: '/apply', label: 'Apply Now' },

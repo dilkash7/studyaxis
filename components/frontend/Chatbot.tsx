@@ -107,7 +107,7 @@ export default function Chatbot() {
         <div className="fixed bottom-44 right-6 z-50 w-80 sm:w-96 bg-white rounded-2xl shadow-2xl flex flex-col overflow-hidden border border-gray-200" style={{ maxHeight: '70vh' }}>
 
           {/* Header */}
-          <div className="bg-gradient-to-r from-green-600 to-green-700 text-white px-4 py-3 flex items-center gap-2">
+          <div className="bg-linear-to-r from-green-600 to-green-700 text-white px-4 py-3 flex items-center gap-2">
             <MessageCircle size={18} />
             <div>
               <p className="font-semibold text-sm">StudyAxis Counsellor</p>

@@ -39,7 +39,7 @@ function SearchResults() {
 
   return (
     <>
-      <div className="bg-gradient-to-br from-green-700 to-green-500 text-white py-12 px-6">
+      <div className="bg-linear-to-br from-green-700 to-green-500 text-white py-12 px-6">
         <div className="max-w-3xl mx-auto text-center">
           <h1 className="text-2xl sm:text-3xl font-extrabold mb-6">Search Colleges & Courses</h1>
           <form onSubmit={handleSearch} className="flex gap-2">

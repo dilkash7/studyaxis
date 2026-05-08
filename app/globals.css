@@ -28,3 +28,12 @@ select option {
   background: linear-gradient(135deg, #f0fdf4 0%, #f8fafc 50%, #eff6ff 100%);
   min-height: 100vh;
 }
+
+/* Hide scrollbar for horizontal filter pills */
+.scrollbar-hide {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
+.scrollbar-hide::-webkit-scrollbar {
+  display: none;
+}

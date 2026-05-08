@@ -7,6 +7,7 @@ type QA = { question: string; answer: string; keywords: string[] };
 type Message = { from: 'user' | 'bot'; text: string };
 
 export default function FAQChatbot() {
+  const [mounted, setMounted] = useState(false);
   const [open, setOpen] = useState(false);
   const [qas, setQas] = useState<QA[]>([]);
   const [messages, setMessages] = useState<Message[]>([
@@ -15,8 +16,11 @@ export default function FAQChatbot() {
   const [input, setInput] = useState('');
 
   useEffect(() => {
+    setMounted(true);
     axios.get('/api/chatbot').then(r => setQas(r.data)).catch(() => {});
   }, []);
+
+  if (!mounted) return null;
 
   const sendMessage = () => {
     if (!input.trim()) return;
@@ -51,7 +55,7 @@ export default function FAQChatbot() {
       {open && (
         <div className="fixed bottom-24 right-6 z-50 w-80 sm:w-96 bg-white rounded-2xl shadow-2xl flex flex-col overflow-hidden border border-gray-200"
           style={{ maxHeight: '65vh' }}>
-          <div className="bg-gradient-to-r from-blue-600 to-blue-700 text-white px-4 py-3 flex items-center gap-2">
+          <div className="bg-linear-to-r from-blue-600 to-blue-700 text-white px-4 py-3 flex items-center gap-2">
             <HelpCircle size={18} />
             <div>
               <p className="font-semibold text-sm">FAQ Assistant</p>

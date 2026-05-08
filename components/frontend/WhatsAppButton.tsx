@@ -3,13 +3,17 @@ import { useEffect, useState } from 'react';
 import axios from 'axios';
 
 export default function WhatsAppButton() {
+  const [mounted, setMounted] = useState(false);
   const [number, setNumber] = useState('919148528115'); // Default number
 
   useEffect(() => {
+    setMounted(true);
     axios.get('/api/settings/homepage')
       .then(r => { if (r.data.whatsapp) setNumber(r.data.whatsapp); })
       .catch(() => {});
   }, []);
+
+  if (!mounted) return null;
 
   return (
     <a href={`https://wa.me/${number}`} target="_blank"

@@ -84,6 +84,7 @@ export default function InquiryForm({
   preselectedCourse = '',
   preselectedCollege = '',
 }) {
+  const [mounted, setMounted] = useState(false);
   const [form, setForm] = useState({
     name: '', phone: '', email: '',
     course: preselectedCourse,
@@ -97,6 +98,7 @@ export default function InquiryForm({
   const [colleges, setColleges] = useState<string[]>([]);
 
   useEffect(() => {
+    setMounted(true);
     Promise.all([
       axios.get('/api/courses'),
       axios.get('/api/locations'),
@@ -107,6 +109,8 @@ export default function InquiryForm({
       setColleges(cl.data.map((c: any) => c.name).filter(Boolean));
     }).catch(() => {});
   }, []);
+
+  if (!mounted) return null;
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();

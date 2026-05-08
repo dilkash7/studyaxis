@@ -30,10 +30,10 @@ export default function Dashboard() {
   return (
     <AdminLayout title="Dashboard">
       <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-4 gap-6 mb-8">
-        <StatCard title="Total Leads" value={leads.length} icon="👥" color="bg-gradient-to-br from-blue-500 to-blue-700" />
-        <StatCard title="Admitted" value={admitted} icon="🎓" color="bg-gradient-to-br from-green-500 to-green-700" />
-        <StatCard title="Conversion Rate" value={`${convRate}%`} icon="📈" color="bg-gradient-to-br from-purple-500 to-purple-700" />
-        <StatCard title="Total Colleges" value={colleges} icon="🏫" color="bg-gradient-to-br from-orange-500 to-orange-700" />
+        <StatCard title="Total Leads" value={leads.length} icon="👥" color="bg-linear-to-br from-blue-500 to-blue-700" />
+        <StatCard title="Admitted" value={admitted} icon="🎓" color="bg-linear-to-br from-green-500 to-green-700" />
+        <StatCard title="Conversion Rate" value={`${convRate}%`} icon="📈" color="bg-linear-to-br from-purple-500 to-purple-700" />
+        <StatCard title="Total Colleges" value={colleges} icon="🏫" color="bg-linear-to-br from-orange-500 to-orange-700" />
       </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">

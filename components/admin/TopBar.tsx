@@ -44,7 +44,7 @@ export default function TopBar({ title }: { title: string }) {
   };
 
   return (
-    <div className="h-16 bg-white border-b border-gray-200 flex items-center justify-between px-6 relative z-30">
+    <div className="flex items-center justify-between w-full">
       <h2 className="text-xl font-bold text-gray-800">{title}</h2>
 
       <div className="flex items-center gap-4">

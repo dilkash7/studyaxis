@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from 'next/server';
 import { connectDB } from '@/lib/mongodb';
 import College from '@/models/College';
 import { requireAuth } from '@/lib/auth';
+import { logAdminAction } from '@/lib/adminLog';
 
 export async function GET(_: NextRequest, { params }: { params: Promise<{ id: string }> }) {
   try {
@@ -23,6 +24,7 @@ export async function PUT(req: NextRequest, { params }: { params: Promise<{ id: 
     await connectDB();
     const body = await req.json();
     const college = await College.findByIdAndUpdate(id, body, { returnDocument: 'after' });
+    await logAdminAction({ adminId: user.id, adminName: user.name, action: 'update', module: 'colleges', description: `Updated college: ${college?.name}`, targetId: id });
     return NextResponse.json({ success: true, college });
   } catch (err) {
     return NextResponse.json({ error: 'Server error' }, { status: 500 });
@@ -36,6 +38,7 @@ export async function DELETE(req: NextRequest, { params }: { params: Promise<{ i
     const { id } = await params;
     await connectDB();
     await College.findByIdAndDelete(id);
+    await logAdminAction({ adminId: user.id, adminName: user.name, action: 'delete', module: 'colleges', description: `Deleted college ID: ${id}`, targetId: id });
     return NextResponse.json({ success: true });
   } catch (err) {
     return NextResponse.json({ error: 'Server error' }, { status: 500 });

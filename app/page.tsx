@@ -15,6 +15,23 @@ export default function Home() {
       <HeroSection />
       <ServicesSection />
 
+      {/* College Finder Section */}
+      <section className="py-20 px-6 bg-linear-to-br from-blue-50 to-indigo-50">
+        <div className="max-w-5xl mx-auto text-center">
+          <span className="inline-block bg-blue-100 text-blue-700 text-sm px-4 py-1 rounded-full font-medium mb-4">Smart Search</span>
+          <h2 className="text-4xl font-extrabold text-gray-900 mb-4">Find Your Perfect College</h2>
+          <p className="text-gray-600 mb-8 text-lg">Get personalized college recommendations based on your preferences, budget, and marks.</p>
+          <div className="flex flex-col sm:flex-row gap-4 justify-center">
+            <Link href="/college-finder" className="inline-flex items-center justify-center bg-blue-600 hover:bg-blue-700 text-white font-bold px-8 py-4 rounded-xl transition transform hover:scale-105">
+              🎓 Smart College Finder
+            </Link>
+            <Link href="/search" className="inline-flex items-center justify-center border-2 border-blue-600 text-blue-600 hover:bg-blue-50 font-bold px-8 py-4 rounded-xl transition">
+              🔍 Advanced Search
+            </Link>
+          </div>
+        </div>
+      </section>
+
       {/* Study Options */}
       <section className="py-20 px-6 bg-white">
         <div className="max-w-5xl mx-auto text-center">
@@ -22,7 +39,7 @@ export default function Home() {
           <h2 className="text-4xl font-extrabold text-gray-900 mb-4">Where Do You Want to Study?</h2>
           <p className="text-gray-500 mb-12 text-lg">Choose your destination and explore top colleges</p>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-            <Link href="/india" className="group bg-gradient-to-br from-orange-400 to-orange-600 text-white rounded-3xl p-10 shadow-lg hover:shadow-2xl hover:-translate-y-2 transition text-left block">
+            <Link href="/india" className="group bg-linear-to-br from-orange-400 to-orange-600 text-white rounded-3xl p-10 shadow-lg hover:shadow-2xl hover:-translate-y-2 transition text-left block">
               <div className="text-6xl mb-4">🇮🇳</div>
               <h3 className="text-3xl font-extrabold mb-2">Study in India</h3>
               <p className="text-orange-100 mb-6">Top MBBS & Engineering colleges in Bangalore, Mangalore, Chennai and more.</p>
@@ -30,7 +47,7 @@ export default function Home() {
                 Explore Colleges →
               </span>
             </Link>
-            <Link href="/abroad" className="group bg-gradient-to-br from-blue-500 to-blue-700 text-white rounded-3xl p-10 shadow-lg hover:shadow-2xl hover:-translate-y-2 transition text-left block">
+            <Link href="/abroad" className="group bg-linear-to-br from-blue-500 to-blue-700 text-white rounded-3xl p-10 shadow-lg hover:shadow-2xl hover:-translate-y-2 transition text-left block">
               <div className="text-6xl mb-4">🌍</div>
               <h3 className="text-3xl font-extrabold mb-2">Study Abroad</h3>
               <p className="text-blue-100 mb-6">Affordable MBBS in Russia, Uzbekistan and other top countries worldwide.</p>

@@ -2,12 +2,52 @@ import mongoose from 'mongoose';
 
 const CourseSchema = new mongoose.Schema({
   name: { type: String, required: true },
-  duration: { type: String },
+  slug: { type: String, unique: true, sparse: true },
   description: { type: String },
+  duration: { type: String }, // e.g., "4 Years", "2 Years"
+  durationMonths: { type: Number },
   icon: { type: String },
-  collegeId: { type: mongoose.Schema.Types.ObjectId, ref: 'College' },
+  
+  // Hierarchical Course Classification
+  mainCategory: {
+    type: String,
+    enum: [
+      'Engineering', 'Medical', 'Management', 'Arts', 'Commerce', 'Law',
+      'Pharmacy', 'Nursing', 'Allied Health Sciences', 'Science', 'Design',
+      'Agriculture', 'Paramedical', 'Aviation', 'Hotel Management',
+      'Computer Applications', 'Education', 'Other'
+    ],
+  },
+  degreeType: { type: String }, // e.g. B.Tech, MBBS, MBA, BCA, Diploma
+  specialization: { type: String }, // e.g. Computer Science, AI & ML
+  
+  // College & Campus Relationship
+  collegeId: { type: mongoose.Schema.Types.ObjectId, ref: 'College', required: true },
   collegeName: { type: String },
+  campusId: { type: mongoose.Schema.Types.ObjectId, ref: 'Campus' },
+  campusName: { type: String },
+  
+  // Course Level
+  courseType: {
+    type: String,
+    enum: ['UG', 'PG', 'Diploma', 'Doctorate', 'Certificate', 'Other'],
+    default: 'UG'
+  },
+  seats: { type: Number },
+  eligibility: { type: String },
+  entranceExam: { type: String }, // e.g. NEET, JEE, KCET
+  minCutoff: { type: Number }, // NEET, CET score
+  avgPlacement: { type: Number },
+  
+  // Display
   active: { type: Boolean, default: true },
+  featured: { type: Boolean, default: false },
+  displayOrder: { type: Number, default: 0 },
+  
+  // SEO
+  metaTitle: { type: String },
+  metaDescription: { type: String },
+  metaKeywords: { type: String },
 }, { timestamps: true });
 
 export default mongoose.models.Course || mongoose.model('Course', CourseSchema);

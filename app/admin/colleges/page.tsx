@@ -126,7 +126,7 @@ export default function CollegesPage() {
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
         {filtered.map((c: any) => (
           <div key={c._id} className="bg-white rounded-2xl shadow-sm p-4 border border-gray-100 hover:shadow-md transition">
-            <div className="h-36 rounded-xl overflow-hidden bg-gradient-to-br from-green-400 to-green-600 mb-3">
+            <div className="h-36 rounded-xl overflow-hidden bg-linear-to-br from-green-400 to-green-600 mb-3">
               {c.image ? (
                 <img src={c.image} alt={c.name} className="w-full h-full object-cover" />
               ) : (

@@ -1,7 +1,7 @@
 'use client';
 import { useState, useEffect, useRef } from 'react';
 import axios from 'axios';
-import { GraduationCap, X } from 'lucide-react';
+import { GraduationCap, X, RotateCcw } from 'lucide-react';
 import Link from 'next/link';
 
 type Message = {
@@ -14,6 +14,7 @@ type Message = {
 };
 
 export default function CounsellingBot() {
+  const [mounted, setMounted] = useState(false);
   const [open, setOpen] = useState(false);
   const [messages, setMessages] = useState<Message[]>([]);
   const [step, setStep] = useState(0);
@@ -22,23 +23,6 @@ export default function CounsellingBot() {
   const [leadForm, setLeadForm] = useState({ name: '', phone: '' });
   const [showLeadForm, setShowLeadForm] = useState(false);
   const messagesEndRef = useRef<HTMLDivElement>(null);
-
-  useEffect(() => {
-    messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
-  }, [messages]);
-
-  const startChat = async () => {
-    setMessages([]);
-    setStep(0);
-    setAnswers({});
-    setShowLeadForm(false);
-    setLeadForm({ name: '', phone: '' });
-    await callAI(0, {});
-  };
-
-  useEffect(() => {
-    if (open && messages.length === 0) startChat();
-  }, [open]);
 
   const callAI = async (currentStep: number, currentAnswers: any) => {
     setLoading(true);
@@ -62,14 +46,40 @@ export default function CounsellingBot() {
     }
   };
 
+  const startChat = async () => {
+    setMessages([]);
+    setStep(0);
+    setAnswers({});
+    setShowLeadForm(false);
+    setLeadForm({ name: '', phone: '' });
+    await callAI(0, {});
+  };
+
+  useEffect(() => { setMounted(true); }, []);
+
+  useEffect(() => {
+    messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
+  }, [messages]);
+
+  useEffect(() => {
+    if (open && messages.length === 0) startChat();
+  }, [open]);
+
+  if (!mounted) return null;
+
   const handleOption = async (option: string) => {
     setMessages(prev => [...prev, { from: 'user', text: option }]);
     const newAnswers = { ...answers };
-    if (step === 1) newAnswers.course = option;
-    else if (step === 2) newAnswers.location = option;
-    else if (step === 3) newAnswers.budget = option;
-    else if (step === 4) newAnswers.score = option;
-    else if (step === 5) newAnswers.wantsHelp = option;
+
+    // Map steps to answer keys based on new hierarchical flow
+    if (step === 1) newAnswers.stream = option;
+    else if (step === 2) newAnswers.degree = option;
+    else if (step === 3) newAnswers.specialization = option;
+    else if (step === 4) newAnswers.budget = option;
+    else if (step === 5) newAnswers.score = option;
+    else if (step === 6) newAnswers.location = option;
+    else if (step === 7) newAnswers.wantsHelp = option;
+
     setAnswers(newAnswers);
     await callAI(step, newAnswers);
   };
@@ -80,33 +90,58 @@ export default function CounsellingBot() {
     setShowLeadForm(false);
     const newAnswers = { ...answers, leadName: leadForm.name, leadPhone: leadForm.phone };
     setAnswers(newAnswers);
-    await callAI(7, newAnswers);
+    await callAI(8, newAnswers);
   };
+
+  // Step progress calculation
+  const totalSteps = 6;
+  const currentStepNum = Math.min(step, totalSteps);
+  const progressPct = (currentStepNum / totalSteps) * 100;
 
   return (
     <>
       {/* Counselling Toggle — LEFT side */}
       <button onClick={() => setOpen(!open)}
-        className="fixed bottom-6 left-6 z-50 bg-green-600 hover:bg-green-700 text-white w-14 h-14 rounded-full shadow-lg flex items-center justify-center transition hover:scale-110"
+        className="fixed bottom-6 left-6 z-50 bg-gradient-to-r from-green-600 to-emerald-600 hover:from-green-700 hover:to-emerald-700 text-white w-14 h-14 rounded-full shadow-lg shadow-green-600/30 flex items-center justify-center transition hover:scale-110"
         title="College Counsellor">
         {open ? <X size={20} /> : <GraduationCap size={22} />}
       </button>
 
       {open && (
         <div className="fixed bottom-24 left-6 z-50 w-80 sm:w-96 bg-white rounded-2xl shadow-2xl flex flex-col overflow-hidden border border-gray-200"
-          style={{ maxHeight: '70vh' }}>
-          <div className="bg-gradient-to-r from-green-600 to-green-700 text-white px-4 py-3 flex items-center gap-2">
-            <GraduationCap size={18} />
-            <div>
-              <p className="font-semibold text-sm">College Counsellor</p>
-              <p className="text-xs text-green-200">AI-powered college finder</p>
+          style={{ maxHeight: '75vh' }}>
+          {/* Header */}
+          <div className="bg-gradient-to-r from-green-600 to-emerald-600 text-white px-4 py-3">
+            <div className="flex items-center gap-2">
+              <GraduationCap size={18} />
+              <div className="flex-1">
+                <p className="font-semibold text-sm">College Counsellor</p>
+                <p className="text-xs text-green-200">AI-powered • 6-step guided finder</p>
+              </div>
+              <button onClick={startChat} className="p-1.5 hover:bg-white/20 rounded-lg transition" title="Start over">
+                <RotateCcw size={14} />
+              </button>
+              <div className="flex items-center gap-1">
+                <span className="w-2 h-2 bg-green-300 rounded-full animate-pulse"></span>
+                <span className="text-xs text-green-200">Active</span>
+              </div>
             </div>
-            <div className="ml-auto flex items-center gap-1">
-              <span className="w-2 h-2 bg-green-300 rounded-full animate-pulse"></span>
-              <span className="text-xs text-green-200">Active</span>
-            </div>
+            {/* Progress bar */}
+            {step > 0 && step <= totalSteps && (
+              <div className="mt-2">
+                <div className="flex justify-between text-[10px] text-green-200 mb-1">
+                  <span>Step {currentStepNum}/{totalSteps}</span>
+                  <span>{Math.round(progressPct)}%</span>
+                </div>
+                <div className="h-1 bg-green-800/40 rounded-full overflow-hidden">
+                  <div className="h-full bg-white/80 rounded-full transition-all duration-500"
+                    style={{ width: `${progressPct}%` }} />
+                </div>
+              </div>
+            )}
           </div>
 
+          {/* Messages */}
           <div className="flex-1 overflow-y-auto p-4 space-y-3 bg-gray-50">
             {messages.map((m, i) => (
               <div key={i} className={`flex ${m.from === 'user' ? 'justify-end' : 'justify-start'}`}>
@@ -120,18 +155,20 @@ export default function CounsellingBot() {
                     )}
                   </p>
 
+                  {/* Options as pills */}
                   {m.type === 'options' && m.options && (
-                    <div className="mt-3 space-y-2">
+                    <div className="mt-3 space-y-1.5">
                       {m.options.map((opt, j) => (
                         <button key={j} onClick={() => handleOption(opt)}
                           disabled={loading}
-                          className="w-full text-left px-3 py-2 bg-green-50 hover:bg-green-100 text-green-700 rounded-xl text-sm font-medium transition border border-green-200 disabled:opacity-50">
+                          className="w-full text-left px-3 py-2 bg-green-50 hover:bg-green-100 text-green-700 rounded-xl text-sm font-medium transition border border-green-200 disabled:opacity-50 active:scale-[0.98]">
                           {opt}
                         </button>
                       ))}
                     </div>
                   )}
 
+                  {/* Results */}
                   {m.type === 'results' && m.results && (
                     <div className="mt-3 space-y-3">
                       {m.results.map((r: any, j: number) => (
@@ -143,7 +180,10 @@ export default function CounsellingBot() {
                               <p className="text-xs text-gray-500">📍 {r.location}</p>
                               <p className="text-xs text-gray-500">📚 {r.course}</p>
                               <p className="text-xs text-green-600 font-semibold">💰 {r.fees}</p>
-                              {r.loanAvailable && <p className="text-xs text-blue-500">✅ Loan Available</p>}
+                              <div className="flex gap-1 mt-1">
+                                {r.loanAvailable && <span className="text-[10px] bg-blue-50 text-blue-600 px-1.5 py-0.5 rounded-full font-bold">Loan</span>}
+                                {r.scholarshipAvailable && <span className="text-[10px] bg-amber-50 text-amber-600 px-1.5 py-0.5 rounded-full font-bold">Scholarship</span>}
+                              </div>
                             </div>
                           </div>
                           <Link href={`/college/${r._id}`}
@@ -156,9 +196,9 @@ export default function CounsellingBot() {
                         className="w-full text-left px-3 py-2 bg-green-50 hover:bg-green-100 text-green-700 rounded-xl text-sm font-medium transition border border-green-200">
                         Yes, help me apply! 🙋
                       </button>
-                      <button onClick={() => handleOption('No, just browsing')}
+                      <button onClick={() => handleOption('No, let me search again 🔄')}
                         className="w-full text-left px-3 py-2 bg-gray-50 hover:bg-gray-100 text-gray-600 rounded-xl text-sm transition border border-gray-200">
-                        No, just browsing
+                        🔄 Start a new search
                       </button>
                     </div>
                   )}
@@ -180,6 +220,7 @@ export default function CounsellingBot() {
               </div>
             ))}
 
+            {/* Lead Form */}
             {showLeadForm && (
               <div className="bg-white rounded-2xl border border-gray-200 p-4 shadow-sm">
                 <p className="text-sm font-bold text-gray-800 mb-3">📝 Your Details</p>
@@ -196,6 +237,7 @@ export default function CounsellingBot() {
               </div>
             )}
 
+            {/* Loading dots */}
             {loading && (
               <div className="flex justify-start">
                 <div className="bg-white rounded-2xl rounded-bl-none px-4 py-3 shadow-sm border border-gray-100">
@@ -212,7 +254,7 @@ export default function CounsellingBot() {
           </div>
 
           <div className="border-t bg-white p-3 text-center">
-            <p className="text-xs text-gray-400">Use buttons above to navigate • No typing needed</p>
+            <p className="text-xs text-gray-400">Guided by AI • Use buttons to navigate</p>
           </div>
         </div>
       )}
