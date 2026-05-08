@@ -1,7 +1,45 @@
+'use client';
 import Link from 'next/link';
-import { MapPin, IndianRupee, Star, Building2 } from 'lucide-react';
+import { useState, useEffect } from 'react';
+import { MapPin, IndianRupee, Star, Building2, Heart, ArrowLeftRight } from 'lucide-react';
+
+function useWishlist() {
+  const [ids, setIds] = useState<string[]>([]);
+  useEffect(() => {
+    const saved = localStorage.getItem('wishlistColleges');
+    if (saved) try { setIds(JSON.parse(saved)); } catch {}
+  }, []);
+  const toggle = (id: string) => {
+    const updated = ids.includes(id) ? ids.filter(x => x !== id) : [...ids, id];
+    setIds(updated);
+    localStorage.setItem('wishlistColleges', JSON.stringify(updated));
+  };
+  return { ids, toggle };
+}
 
 export default function CollegeCard({ college }: { college: any }) {
+  const { ids: wishlist, toggle } = useWishlist();
+  const isSaved = wishlist.includes(college._id);
+
+  const handleWishlist = (e: React.MouseEvent) => {
+    e.preventDefault(); e.stopPropagation();
+    toggle(college._id);
+  };
+
+  const handleCompare = (e: React.MouseEvent) => {
+    e.preventDefault(); e.stopPropagation();
+    const saved = localStorage.getItem('compareColleges');
+    const current = saved ? JSON.parse(saved) : [];
+    if (current.includes(college._id)) {
+      window.location.href = '/compare';
+      return;
+    }
+    if (current.length >= 3) { alert('Max 3 colleges for comparison'); return; }
+    current.push(college._id);
+    localStorage.setItem('compareColleges', JSON.stringify(current));
+    window.location.href = '/compare';
+  };
+
   return (
     <Link href={`/college/${college._id}`}>
       <div className="bg-white rounded-2xl overflow-hidden shadow hover:shadow-xl transition group cursor-pointer h-full flex flex-col">
@@ -27,6 +65,16 @@ export default function CollegeCard({ college }: { college: any }) {
           }`}>
             {college.type === 'india' ? '🇮🇳 India' : '🌍 Abroad'}
           </span>
+
+          {/* Wishlist + Compare buttons */}
+          <div className="absolute bottom-2 right-2 flex gap-1.5">
+            <button onClick={handleCompare} title="Compare" className="w-8 h-8 rounded-full bg-white/90 backdrop-blur flex items-center justify-center hover:bg-blue-100 transition shadow-sm">
+              <ArrowLeftRight size={14} className="text-blue-600" />
+            </button>
+            <button onClick={handleWishlist} title={isSaved ? 'Remove from wishlist' : 'Save to wishlist'} className={`w-8 h-8 rounded-full backdrop-blur flex items-center justify-center transition shadow-sm ${isSaved ? 'bg-red-500 text-white' : 'bg-white/90 hover:bg-red-50'}`}>
+              <Heart size={14} className={isSaved ? 'fill-current' : 'text-red-400'} />
+            </button>
+          </div>
         </div>
 
         {/* Content */}

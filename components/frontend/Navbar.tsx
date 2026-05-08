@@ -1,7 +1,7 @@
 'use client';
 import { useState, useEffect } from 'react';
 import Link from 'next/link';
-import { Menu, X, Phone, Search } from 'lucide-react';
+import { Menu, X, Phone, Search, Heart, ArrowLeftRight } from 'lucide-react';
 import { useRouter } from 'next/navigation';
 import axios from 'axios';
 
@@ -72,6 +72,8 @@ export default function Navbar() {
           <Link href="/india" className="text-gray-600 hover:text-green-600 font-medium transition text-sm">India</Link>
           <Link href="/abroad" className="text-gray-600 hover:text-green-600 font-medium transition text-sm">Abroad</Link>
           <Link href="/apply" className="text-gray-600 hover:text-green-600 font-medium transition text-sm">Apply</Link>
+          <Link href="/compare" className="text-gray-600 hover:text-green-600 font-medium transition text-sm flex items-center gap-1"><ArrowLeftRight size={13} /> Compare</Link>
+          <Link href="/saved" className="text-gray-600 hover:text-red-500 font-medium transition text-sm flex items-center gap-1"><Heart size={13} /> Saved</Link>
           <Link href="/admin/login" className="text-gray-500 hover:text-green-600 text-xs border border-gray-200 px-3 py-1 rounded-full transition">Admin</Link>
           <a href={`https://wa.me/${settings.whatsapp || '919876543210'}`} target="_blank"
             className="flex items-center gap-1 bg-green-600 text-white px-4 py-2 rounded-full hover:bg-green-700 transition text-sm font-medium">
@@ -109,6 +111,8 @@ export default function Navbar() {
             { href: '/india', label: 'Study in India' },
             { href: '/abroad', label: 'Study Abroad' },
             { href: '/apply', label: 'Apply Now' },
+            { href: '/compare', label: '⚖️ Compare Colleges' },
+            { href: '/saved', label: '❤️ Saved Colleges' },
             { href: '/admin/login', label: 'Admin Login' },
           ].map(l => (
             <Link key={l.href} href={l.href} onClick={() => setOpen(false)}

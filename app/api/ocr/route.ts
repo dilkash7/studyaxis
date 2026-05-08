@@ -2,13 +2,11 @@ import { NextRequest, NextResponse } from 'next/server';
 import { connectDB } from '@/lib/mongodb';
 import { requireAuth } from '@/lib/auth';
 import { logAdminAction } from '@/lib/adminLog';
-import { extractTextFromImage, parseOCRText } from '@/lib/ocr';
 import { fullClassify } from '@/lib/courseClassifier';
 
 /**
  * OCR Scan API
  * POST body: { imageUrl } or multipart form with file
- * Returns: extracted text, detected courses, fees, contact info
  */
 export async function POST(req: NextRequest) {
   try {
@@ -19,19 +17,32 @@ export async function POST(req: NextRequest) {
     const contentType = req.headers.get('content-type') || '';
     let rawText = '';
 
-    if (contentType.includes('application/json')) {
-      const { imageUrl } = await req.json();
-      if (!imageUrl) return NextResponse.json({ error: 'imageUrl required' }, { status: 400 });
-      rawText = await extractTextFromImage(imageUrl);
-    } else if (contentType.includes('multipart/form-data')) {
+    // Dynamic import to avoid build-time issues
+    const { extractTextFromImage, extractTextFromBuffer, parseOCRText } = await import('@/lib/ocr');
+
+    if (contentType.includes('multipart/form-data')) {
       const formData = await req.formData();
       const file = formData.get('file') as File;
       if (!file) return NextResponse.json({ error: 'file required' }, { status: 400 });
       const buffer = Buffer.from(await file.arrayBuffer());
-      const { extractTextFromBuffer } = await import('@/lib/ocr');
       rawText = await extractTextFromBuffer(buffer);
     } else {
-      return NextResponse.json({ error: 'Send JSON with imageUrl or multipart form with file' }, { status: 400 });
+      const body = await req.json();
+      const { imageUrl } = body;
+      if (!imageUrl) return NextResponse.json({ error: 'imageUrl required' }, { status: 400 });
+      rawText = await extractTextFromImage(imageUrl);
+    }
+
+    if (!rawText || rawText.trim().length === 0) {
+      return NextResponse.json({
+        success: true,
+        rawText: '',
+        courses: [],
+        fees: [],
+        contactInfo: { phones: [], emails: [], websites: [] },
+        confidence: 0,
+        message: 'No text detected in the image. Try a clearer image or a different angle.',
+      });
     }
 
     // Parse the extracted text
@@ -47,7 +58,6 @@ export async function POST(req: NextRequest) {
       adminId: user.id, adminName: user.name,
       action: 'create', module: 'ocr',
       description: `OCR scan: ${parsed.courses.length} courses, ${parsed.fees.length} fees detected`,
-      metadata: { courses: parsed.courses.length, fees: parsed.fees.length, confidence: parsed.confidence },
     });
 
     return NextResponse.json({
@@ -59,7 +69,8 @@ export async function POST(req: NextRequest) {
       confidence: parsed.confidence,
     });
   } catch (err: any) {
-    console.error('OCR API error:', err.message);
-    return NextResponse.json({ error: err.message }, { status: 500 });
+    console.error('OCR API error:', err);
+    const message = err.message || 'OCR scan failed';
+    return NextResponse.json({ error: message }, { status: 500 });
   }
 }
