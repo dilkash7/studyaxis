@@ -2,6 +2,7 @@ import { connectDB } from '@/lib/mongodb';
 import AdmissionCategory from '@/models/AdmissionCategory';
 import College from '@/models/College';
 import { NextRequest, NextResponse } from 'next/server';
+import { logAdminAction } from '@/lib/adminLog';
 
 export async function GET(
   req: NextRequest,
@@ -49,6 +50,7 @@ export async function PUT(
       );
     }
     
+    await logAdminAction({ action: 'update', module: 'categories', description: `Updated category: ${category.name}`, targetId: id, targetName: category.name });
     return NextResponse.json({ success: true, data: category });
   } catch (error: any) {
     return NextResponse.json(
@@ -81,6 +83,7 @@ export async function DELETE(
       { new: true }
     );
     
+    await logAdminAction({ action: 'delete', module: 'categories', description: `Deleted category: ${category.name}`, targetId: id, targetName: category.name });
     return NextResponse.json({ success: true, message: 'Category deleted' });
   } catch (error: any) {
     return NextResponse.json(

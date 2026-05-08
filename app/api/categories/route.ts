@@ -2,6 +2,7 @@ import { connectDB } from '@/lib/mongodb';
 import AdmissionCategory from '@/models/AdmissionCategory';
 import College from '@/models/College';
 import { NextRequest, NextResponse } from 'next/server';
+import { logAdminAction } from '@/lib/adminLog';
 
 export async function GET(req: NextRequest) {
   try {
@@ -61,6 +62,7 @@ export async function POST(req: NextRequest) {
       { new: true }
     );
     
+    await logAdminAction({ action: 'create', module: 'categories', description: `Created category: ${data.name} for ${college.name}`, targetId: category._id, targetName: data.name });
     return NextResponse.json({ success: true, data: category }, { status: 201 });
   } catch (error: any) {
     return NextResponse.json(
