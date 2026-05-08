@@ -4,7 +4,7 @@ import axios from 'axios';
 import AdminLayout from '@/components/admin/AdminLayout';
 import Modal from '@/components/ui/Modal';
 import ConfirmDialog from '@/components/ui/ConfirmDialog';
-import { Plus, Pencil, Trash2, Search } from 'lucide-react';
+import { Plus, Pencil, Trash2, Search, Copy } from 'lucide-react';
 
 const empty = {
   name: '', type: 'india', locationId: '', city: '', country: '',
@@ -101,6 +101,18 @@ export default function CollegesPage() {
     fetchAll();
   };
 
+  const handleClone = async (c: any) => {
+    const newName = prompt(`Clone "${c.name}" as:`, `${c.name} (Copy)`);
+    if (!newName) return;
+    try {
+      const r = await axios.post('/api/clone', { collegeId: c._id, newName }, { headers });
+      alert(`✅ Cloned! ${r.data.clonedCourses} courses, ${r.data.clonedFees} fees copied.`);
+      fetchAll();
+    } catch (err: any) {
+      alert(err.response?.data?.error || 'Clone failed');
+    }
+  };
+
   const inputClass = "w-full border border-gray-300 rounded-xl px-4 py-2 text-sm text-gray-800 bg-white focus:outline-none focus:ring-2 focus:ring-green-400";
   const labelClass = "block text-sm font-medium text-gray-700 mb-1";
 
@@ -152,9 +164,13 @@ export default function CollegesPage() {
                 className="flex-1 flex items-center justify-center gap-1 py-2 bg-gray-100 hover:bg-gray-200 rounded-xl text-sm text-gray-700 transition">
                 <Pencil size={14} /> Edit
               </button>
+              <button onClick={() => handleClone(c)}
+                className="flex items-center justify-center gap-1 py-2 px-3 bg-blue-50 hover:bg-blue-100 text-blue-600 rounded-xl text-sm transition" title="Clone">
+                <Copy size={14} />
+              </button>
               <button onClick={() => setDeleteId(c._id)}
-                className="flex-1 flex items-center justify-center gap-1 py-2 bg-red-50 hover:bg-red-100 text-red-500 rounded-xl text-sm transition">
-                <Trash2 size={14} /> Delete
+                className="flex items-center justify-center gap-1 py-2 px-3 bg-red-50 hover:bg-red-100 text-red-500 rounded-xl text-sm transition">
+                <Trash2 size={14} />
               </button>
             </div>
           </div>
