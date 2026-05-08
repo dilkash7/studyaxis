@@ -7,7 +7,7 @@ import {
   BookOpen, MessageSquare, Settings, UserCog,
   LogOut, DollarSign, Home, Zap, Star,
   Building2, Image, FileText, Tags, GraduationCap,
-  ChevronLeft, ChevronRight, Menu,
+  ChevronLeft, ChevronRight, Menu, Sparkles,
 } from 'lucide-react';
 import axios from 'axios';
 import { useRouter } from 'next/navigation';
@@ -31,6 +31,7 @@ const allLinks = [
   { href: '/admin/services', label: 'Services', icon: Star, permission: null },
   { href: '/admin/chatbot', label: 'Chatbot Q&A', icon: MessageSquare, permission: 'chatbot' },
   { href: '/admin/quickadd', label: 'Quick Add', icon: Zap, permission: null },
+  { href: '/admin/ocr', label: 'AI Scanner', icon: Sparkles, permission: null },
   { href: '/admin/student-records', label: 'Students', icon: GraduationCap, permission: 'studentRecords', superadminOnly: true },
   { href: '/admin/admins', label: 'Admin Team', icon: UserCog, permission: 'admins', superadminOnly: true },
   { href: '/admin/homepage', label: 'Homepage', icon: Home, permission: null },
