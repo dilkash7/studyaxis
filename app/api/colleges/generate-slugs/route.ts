@@ -6,36 +6,54 @@ import College from '@/models/College';
 
 /**
  * Generate slugs for all colleges that don't have one yet.
- * POST /api/colleges/generate-slugs
+ * GET /api/colleges/generate-slugs  (one-time backfill)
+ * POST /api/colleges/generate-slugs (admin authenticated)
  */
-export async function POST(req: NextRequest) {
-  const user = requireAuth(req);
-  if (!user) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
-  await connectDB();
 
+async function generateSlugs() {
+  await connectDB();
   const colleges = await College.find({ $or: [{ slug: null }, { slug: '' }, { slug: { $exists: false } }] });
   let generated = 0;
+  const results: string[] = [];
 
   for (const college of colleges) {
     try {
-      // Trigger the pre-save hook which auto-generates slug
       await college.save();
       generated++;
+      results.push(`✅ ${college.name} → ${college.slug}`);
     } catch (err: any) {
+      results.push(`❌ ${college.name}: ${err.message}`);
       console.error(`Slug gen failed for ${college.name}:`, err.message);
     }
   }
 
+  return { generated, total: colleges.length, results };
+}
+
+export async function GET() {
+  const data = await generateSlugs();
+  return NextResponse.json({
+    success: true,
+    ...data,
+    message: `Generated slugs for ${data.generated}/${data.total} colleges`,
+  });
+}
+
+export async function POST(req: NextRequest) {
+  const user = requireAuth(req);
+  if (!user) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+
+  const data = await generateSlugs();
+
   await logAdminAction({
     adminId: user.id, adminName: user.name,
     action: 'update', module: 'colleges',
-    description: `Generated slugs for ${generated} colleges`,
+    description: `Generated slugs for ${data.generated} colleges`,
   });
 
   return NextResponse.json({
     success: true,
-    generated,
-    total: colleges.length,
-    message: `Generated slugs for ${generated}/${colleges.length} colleges`,
+    ...data,
+    message: `Generated slugs for ${data.generated}/${data.total} colleges`,
   });
 }

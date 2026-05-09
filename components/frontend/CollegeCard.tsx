@@ -41,7 +41,7 @@ export default function CollegeCard({ college }: { college: any }) {
   };
 
   return (
-    <Link href={`/college/${college._id}`}>
+    <Link href={`/college/${college.slug || college._id}`}>
       <div className="bg-white rounded-2xl overflow-hidden shadow hover:shadow-xl transition group cursor-pointer h-full flex flex-col">
         {/* Image */}
         <div className="h-48 bg-gradient-to-br from-green-400 to-green-700 relative overflow-hidden flex-shrink-0">

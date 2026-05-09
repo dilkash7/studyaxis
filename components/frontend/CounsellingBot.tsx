@@ -1,5 +1,6 @@
 'use client';
 import { useState, useEffect, useRef } from 'react';
+import { usePathname } from 'next/navigation';
 import axios from 'axios';
 import { GraduationCap, X, RotateCcw } from 'lucide-react';
 import Link from 'next/link';
@@ -64,8 +65,11 @@ export default function CounsellingBot() {
   useEffect(() => {
     if (open && messages.length === 0) startChat();
   }, [open]);
+  const pathname = usePathname();
 
   if (!mounted) return null;
+  // Hide on admin pages
+  if (pathname?.startsWith('/admin')) return null;
 
   const handleOption = async (option: string) => {
     setMessages(prev => [...prev, { from: 'user', text: option }]);
@@ -186,7 +190,7 @@ export default function CounsellingBot() {
                               </div>
                             </div>
                           </div>
-                          <Link href={`/college/${r._id}`}
+                          <Link href={`/college/${r.slug || r._id}`}
                             className="mt-2 block w-full text-center bg-green-600 text-white text-xs font-bold py-1.5 rounded-lg hover:bg-green-700 transition">
                             View College →
                           </Link>

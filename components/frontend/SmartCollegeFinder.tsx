@@ -215,7 +215,7 @@ export default function SmartCollegeFinder({ onComplete }: SmartCollegeFinderPro
         {results.length > 0 ? (
           <div className="space-y-4 mb-8">
             {results.map((college: any) => (
-              <Link key={college._id} href={`/college/${college._id}`} className="block">
+              <Link key={college._id} href={`/college/${college.slug || college._id}`} className="block">
                 <div className="bg-white rounded-2xl border border-gray-100 shadow-sm hover:shadow-lg transition p-5 sm:p-6 flex flex-col sm:flex-row gap-4">
                   <div className="w-full sm:w-32 h-32 sm:h-24 rounded-xl overflow-hidden bg-gradient-to-br from-green-400 to-green-700 shrink-0">
                     {college.image ? (

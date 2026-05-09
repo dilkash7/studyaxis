@@ -165,7 +165,7 @@ export default function Chatbot() {
                               {r.loanAvailable && <p className="text-xs text-blue-500">✅ Loan Available</p>}
                             </div>
                           </div>
-                          <Link href={`/college/${r._id}`}
+                          <Link href={`/college/${r.slug || r._id}`}
                             className="mt-2 block w-full text-center bg-green-600 text-white text-xs font-bold py-1.5 rounded-lg hover:bg-green-700 transition">
                             View College →
                           </Link>
