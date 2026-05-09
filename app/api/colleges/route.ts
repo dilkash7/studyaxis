@@ -21,12 +21,23 @@ export async function GET(req: NextRequest) {
     if (country) filter.country = { $regex: country, $options: 'i' };
     if (featured) filter.featured = true;
 
+    const paginate = searchParams.get('paginate') === 'true';
+    const total = paginate ? await College.countDocuments(filter) : 0;
     const colleges = await College.find(filter)
       .sort({ featured: -1, createdAt: -1 })
       .skip((page - 1) * limit)
       .limit(limit)
       .lean();
 
+    if (paginate) {
+      return NextResponse.json({
+        data: colleges,
+        total,
+        page,
+        limit,
+        pages: Math.ceil(total / limit),
+      });
+    }
     return NextResponse.json(colleges);
   } catch (err) {
     return NextResponse.json({ error: 'Server error' }, { status: 500 });

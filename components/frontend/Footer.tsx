@@ -91,6 +91,7 @@ export default function Footer() {
               { href: '/faqs', label: 'FAQs' },
               { href: '/notices', label: 'Notice Board' },
               { href: '/blog', label: 'Blog & News' },
+              { href: '/testimonials', label: 'Testimonials' },
               { href: '/career-guidance', label: 'Career Guidance' },
               { href: '/visa-guidance', label: 'Visa Guidance' },
               { href: '/callback', label: 'Request Callback' },

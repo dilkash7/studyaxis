@@ -5,6 +5,28 @@ import { logAdminAction } from '@/lib/adminLog';
 import Blog from '@/models/Blog';
 import mongoose from 'mongoose';
 
+// Public GET: fetch single blog by ObjectId or slug
+export async function GET(_: NextRequest, { params }: { params: Promise<{ id: string }> }) {
+  try {
+    await connectDB();
+    const { id } = await params;
+    let blog;
+    if (mongoose.Types.ObjectId.isValid(id)) {
+      blog = await Blog.findById(id);
+    }
+    if (!blog) {
+      blog = await Blog.findOne({ slug: id });
+    }
+    if (!blog) return NextResponse.json({ error: 'Not found' }, { status: 404 });
+    // Increment views
+    blog.views = (blog.views || 0) + 1;
+    await blog.save();
+    return NextResponse.json(blog);
+  } catch (err) {
+    return NextResponse.json({ error: 'Server error' }, { status: 500 });
+  }
+}
+
 export async function PUT(req: NextRequest, { params }: { params: Promise<{ id: string }> }) {
   const user = requireAuth(req);
   if (!user) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });

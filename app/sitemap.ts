@@ -24,6 +24,7 @@ export default async function sitemap() {
       { url: `${baseUrl}/compare`, lastModified: new Date(), changeFrequency: 'weekly', priority: 0.6 },
       { url: `${baseUrl}/callback`, lastModified: new Date(), changeFrequency: 'monthly', priority: 0.6 },
       { url: `${baseUrl}/college-finder`, lastModified: new Date(), changeFrequency: 'weekly', priority: 0.8 },
+      { url: `${baseUrl}/testimonials`, lastModified: new Date(), changeFrequency: 'weekly', priority: 0.7 },
     ];
     
     // Dynamic college routes

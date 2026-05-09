@@ -19,6 +19,7 @@ const EXPLORE_LINKS = [
   { href: '/career-guidance', label: '💼 Career Guidance', desc: 'Expert career counselling' },
   { href: '/blog', label: '📰 Blog & News', desc: 'Latest education updates' },
   { href: '/faqs', label: '❓ FAQs', desc: 'Common questions answered' },
+  { href: '/testimonials', label: '💬 Testimonials', desc: 'Student success stories' },
   { href: '/compare', label: '⚖️ Compare Colleges', desc: 'Side-by-side comparison' },
 ];
 
@@ -35,6 +36,7 @@ const MOBILE_LINKS = [
   { href: '/blog', label: '📰 Blog & News' },
   { href: '/faqs', label: '❓ FAQs' },
   { href: '/notices', label: '🔔 Notices' },
+  { href: '/testimonials', label: '💬 Testimonials' },
   { href: '/callback', label: '📞 Request Callback' },
   { href: '/compare', label: '⚖️ Compare Colleges' },
   { href: '/saved', label: '❤️ Saved Colleges' },
