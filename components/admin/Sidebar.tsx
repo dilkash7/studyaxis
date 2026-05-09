@@ -8,6 +8,7 @@ import {
   LogOut, DollarSign, Home, Zap, Star,
   Building2, Image, FileText, Tags, GraduationCap,
   ChevronLeft, ChevronRight, Menu, Sparkles,
+  Bell, Newspaper,
 } from 'lucide-react';
 import axios from 'axios';
 import { useRouter } from 'next/navigation';
@@ -30,6 +31,8 @@ const allLinks = [
   { href: '/admin/locations', label: 'Locations', icon: MapPin, permission: 'locations' },
   { href: '/admin/services', label: 'Services', icon: Star, permission: null },
   { href: '/admin/chatbot', label: 'Chatbot Q&A', icon: MessageSquare, permission: 'chatbot' },
+  { href: '/admin/notices', label: 'Notice Board', icon: Bell, permission: null },
+  { href: '/admin/blog', label: 'Blog / News', icon: Newspaper, permission: null },
   { href: '/admin/quickadd', label: 'Quick Add', icon: Zap, permission: null },
   { href: '/admin/ocr', label: 'AI Scanner', icon: Sparkles, permission: null },
   { href: '/admin/student-records', label: 'Students', icon: GraduationCap, permission: 'studentRecords', superadminOnly: true },
