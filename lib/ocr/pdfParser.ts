@@ -4,7 +4,7 @@
  * Falls back to OCR for scanned PDFs
  */
 
-import { extractTextFromBuffer } from '../ocr';
+// Note: For scanned PDFs, OCR is handled separately via visionOCR
 
 export interface PDFParseResult {
   text: string;
@@ -19,8 +19,9 @@ export interface PDFParseResult {
  * Falls back to OCR if PDF is scanned (image-based)
  */
 export async function parsePDF(buffer: Buffer): Promise<PDFParseResult> {
-  // Dynamic import to avoid build issues
-  const pdfParse = (await import('pdf-parse')).default;
+  // Dynamic import to avoid build issues — pdf-parse v2 changed its export shape
+  const mod = await import('pdf-parse');
+  const pdfParse = (mod as any).default || mod;
 
   try {
     const data = await pdfParse(buffer, { max: 50 }); // Max 50 pages

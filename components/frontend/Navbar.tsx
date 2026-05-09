@@ -147,7 +147,11 @@ export default function Navbar() {
             )}
           </div>
 
-          <Link href="/saved" className={`p-2 rounded-lg transition ${isActive('/saved') ? 'text-red-500 bg-red-50' : 'text-gray-400 hover:text-red-500 hover:bg-gray-50'}`}>
+          <Link href="/admin/dashboard" className={`p-2 rounded-lg transition text-gray-400 hover:text-purple-600 hover:bg-purple-50`} title="Admin Dashboard">
+            <span className="font-bold text-xs uppercase tracking-wider">Admin</span>
+          </Link>
+
+          <Link href="/saved" className={`p-2 rounded-lg transition ${isActive('/saved') ? 'text-red-500 bg-red-50' : 'text-gray-400 hover:text-red-500 hover:bg-gray-50'}`} title="Saved Colleges">
             <Heart size={16} />
           </Link>
 
@@ -189,6 +193,10 @@ export default function Navbar() {
               {l.label}
             </Link>
           ))}
+          <Link href="/admin/dashboard" onClick={() => setOpen(false)}
+            className="block py-2.5 px-3 rounded-xl text-sm font-medium text-purple-600 bg-purple-50 hover:bg-purple-100 transition">
+            Admin Dashboard
+          </Link>
           <div className="pt-2 mt-2 border-t border-gray-100">
             <a href={`https://wa.me/${settings.whatsapp || '919876543210'}`} target="_blank"
               className="flex items-center justify-center gap-2 bg-green-600 text-white py-3 rounded-xl font-bold text-sm hover:bg-green-700 transition w-full">

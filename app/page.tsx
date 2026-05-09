@@ -6,6 +6,8 @@ import InquiryForm from '@/components/frontend/InquiryForm';
 import HomepageDynamic from '@/components/frontend/HomepageDynamic';
 import Link from 'next/link';
 
+export const revalidate = 3600; // ISR: Rebuild homepage every hour
+
 export default function Home() {
   return (
     <div style={{ background: 'linear-gradient(180deg, #f8fafc 0%, #ffffff 100%)' }}>

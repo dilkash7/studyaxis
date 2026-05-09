@@ -4,7 +4,6 @@
  */
 
 import { createWorker } from 'tesseract.js';
-import sharp from 'sharp';
 
 export interface RawOCRResult {
   text: string;
@@ -14,13 +13,14 @@ export interface RawOCRResult {
 
 /**
  * Ensure the buffer is a valid PNG for Tesseract
- * Converts any image format (including problematic ones) to PNG
+ * Uses sharp if available, otherwise passes buffer through
  */
 async function ensurePng(buffer: Buffer): Promise<Buffer> {
   try {
+    const sharp = (await import('sharp')).default;
     return await sharp(buffer).png().toBuffer();
   } catch {
-    // If sharp fails, return original buffer
+    // sharp not installed or conversion failed — return original buffer
     return buffer;
   }
 }

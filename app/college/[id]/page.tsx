@@ -71,6 +71,35 @@ export default function CollegeDetailPage() {
   const [courseSearch, setCourseSearch] = useState('');
   const [courseTypeFilter, setCourseTypeFilter] = useState('all');
 
+  // Review Form State
+  const [showReviewForm, setShowReviewForm] = useState(false);
+  const [reviewForm, setReviewForm] = useState({ name: '', rating: 5, content: '' });
+  const [submittingReview, setSubmittingReview] = useState(false);
+
+  const submitReview = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!reviewForm.name || !reviewForm.content) return alert('Name and content are required');
+    setSubmittingReview(true);
+    try {
+      await axios.post('/api/reviews', {
+        userName: reviewForm.name,
+        name: reviewForm.name,
+        content: reviewForm.content,
+        overallRating: reviewForm.rating,
+        rating: reviewForm.rating,
+        college: college._id,
+        isApproved: false
+      });
+      alert('Review submitted! It will appear once approved by an admin.');
+      setShowReviewForm(false);
+      setReviewForm({ name: '', rating: 5, content: '' });
+    } catch {
+      alert('Failed to submit review');
+    } finally {
+      setSubmittingReview(false);
+    }
+  };
+
   useEffect(() => {
     // Step 1: Fetch college (works with both ObjectId and slug)
     axios.get(`/api/colleges/${id}`).then(async (c) => {
@@ -572,33 +601,66 @@ export default function CollegeDetailPage() {
                 {/* REVIEWS TAB */}
                 {activeTab === 'reviews' && (
                   <div className="space-y-4">
+                    <div className="flex items-center justify-between mb-4">
+                      <h3 className="font-bold text-gray-800">Student Reviews ({reviews.filter((r: any) => r.approved !== false).length})</h3>
+                      <button onClick={() => setShowReviewForm(!showReviewForm)} className="text-sm font-bold bg-gray-100 hover:bg-gray-200 text-gray-700 px-3 py-1.5 rounded-lg transition">
+                        {showReviewForm ? 'Cancel' : 'Write a Review'}
+                      </button>
+                    </div>
+
+                    {showReviewForm && (
+                      <form onSubmit={submitReview} className="bg-white border border-gray-200 rounded-xl p-4 mb-6 shadow-sm">
+                        <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
+                          <div>
+                            <label className="block text-xs font-bold text-gray-600 mb-1">Your Name *</label>
+                            <input value={reviewForm.name} onChange={e => setReviewForm({ ...reviewForm, name: e.target.value })} required className="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-green-400" placeholder="John Doe" />
+                          </div>
+                          <div>
+                            <label className="block text-xs font-bold text-gray-600 mb-1">Rating *</label>
+                            <select value={reviewForm.rating} onChange={e => setReviewForm({ ...reviewForm, rating: Number(e.target.value) })} className="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-green-400 bg-white">
+                              {[5, 4, 3, 2, 1].map(num => <option key={num} value={num}>{num} Stars</option>)}
+                            </select>
+                          </div>
+                        </div>
+                        <div className="mb-4">
+                          <label className="block text-xs font-bold text-gray-600 mb-1">Your Review *</label>
+                          <textarea value={reviewForm.content} onChange={e => setReviewForm({ ...reviewForm, content: e.target.value })} required rows={3} className="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-green-400" placeholder="Tell us about your experience..." />
+                        </div>
+                        <button type="submit" disabled={submittingReview} className="bg-green-600 text-white font-bold text-sm px-4 py-2 rounded-lg hover:bg-green-700 transition disabled:opacity-50">
+                          {submittingReview ? 'Submitting...' : 'Submit Review'}
+                        </button>
+                      </form>
+                    )}
+
                     {reviews.length > 0 ? reviews.filter((r: any) => r.approved !== false).map((r: any) => (
                       <div key={r._id} className="bg-gray-50 rounded-xl p-4 border border-gray-100">
                         <div className="flex items-start justify-between gap-3">
                           <div className="flex-1">
                             <div className="flex items-center gap-2 mb-1">
-                              <span className="font-bold text-gray-800 text-sm">{r.name || 'Student'}</span>
+                              <span className="font-bold text-gray-800 text-sm">{r.name || r.userName || 'Student'}</span>
                               {r.verified && <span className="text-[10px] bg-green-100 text-green-700 px-1.5 py-0.5 rounded-full font-bold">✅ Verified</span>}
                             </div>
                             {r.course && <p className="text-xs text-gray-400 mb-2">{r.course} {r.year ? `• ${r.year}` : ''}</p>}
-                            {r.rating && (
+                            {r.rating ? (
                               <div className="flex items-center gap-0.5 mb-2">
                                 {[...Array(5)].map((_, i) => (
-                                  <Star key={i} size={12} className={i < r.rating ? 'text-yellow-400' : 'text-gray-200'} fill={i < r.rating ? 'currentColor' : 'none'} />
+                                  <Star key={i} size={12} className={i < (r.rating || r.overallRating) ? 'text-yellow-400' : 'text-gray-200'} fill={i < (r.rating || r.overallRating) ? 'currentColor' : 'none'} />
                                 ))}
-                                <span className="text-xs text-gray-500 ml-1">{r.rating}/5</span>
+                                <span className="text-xs text-gray-500 ml-1">{r.rating || r.overallRating}/5</span>
                               </div>
-                            )}
+                            ) : null}
                             <p className="text-sm text-gray-600">{r.content || r.review || r.message}</p>
                           </div>
                         </div>
                         <p className="text-[10px] text-gray-400 mt-2">{new Date(r.createdAt).toLocaleDateString()}</p>
                       </div>
                     )) : (
-                      <div className="text-center py-8">
-                        <MessageSquare size={32} className="mx-auto text-gray-200 mb-2" />
-                        <p className="text-gray-400">No reviews yet</p>
-                      </div>
+                      !showReviewForm && (
+                        <div className="text-center py-8">
+                          <MessageSquare size={32} className="mx-auto text-gray-200 mb-2" />
+                          <p className="text-gray-400">No reviews yet. Be the first to review!</p>
+                        </div>
+                      )
                     )}
                   </div>
                 )}

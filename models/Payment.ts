@@ -22,11 +22,10 @@ const PaymentSchema = new mongoose.Schema({
 PaymentSchema.index({ phone: 1, status: 1 });
 PaymentSchema.index({ receiptNumber: 1 });
 
-PaymentSchema.pre('save', function (next) {
+PaymentSchema.pre('save', function () {
   if (!this.receiptNumber) {
     this.receiptNumber = `REC-${Date.now().toString(36).toUpperCase()}-${Math.random().toString(36).slice(2, 5).toUpperCase()}`;
   }
-  next();
 });
 
 export default mongoose.models.Payment || mongoose.model('Payment', PaymentSchema);

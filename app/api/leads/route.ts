@@ -30,7 +30,8 @@ export async function POST(req: NextRequest) {
     const body = await req.json();
     const lead = await Lead.create(body);
     return NextResponse.json({ success: true, lead });
-  } catch (err) {
-    return NextResponse.json({ error: 'Server error' }, { status: 500 });
+  } catch (err: any) {
+    console.error('Lead creation error:', err);
+    return NextResponse.json({ error: err.message || 'Server error' }, { status: 500 });
   }
 }

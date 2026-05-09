@@ -68,9 +68,9 @@ const CollegeSchema = new mongoose.Schema({
 }, { timestamps: true });
 
 // Auto-generate slug on save
-CollegeSchema.pre('save', async function (next) {
+CollegeSchema.pre('save', async function () {
   if (!this.slug && this.name) {
-    let baseSlug = generateSlug(this.name, this.city);
+    let baseSlug = generateSlug(this.name, this.city ?? undefined);
     let slug = baseSlug;
     let counter = 1;
     
@@ -82,7 +82,6 @@ CollegeSchema.pre('save', async function (next) {
     }
     this.slug = slug;
   }
-  next();
 });
 
 CollegeSchema.index({ slug: 1 });

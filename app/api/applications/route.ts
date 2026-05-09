@@ -15,10 +15,15 @@ export async function GET(req: NextRequest) {
 }
 
 export async function POST(req: NextRequest) {
-  // Public — students can submit applications
-  await connectDB();
-  const body = await req.json();
-  if (!body.studentName || !body.phone) return NextResponse.json({ error: 'Name and phone required' }, { status: 400 });
-  const app = await Application.create(body);
-  return NextResponse.json({ success: true, applicationNumber: app.applicationNumber, message: 'Application submitted successfully' }, { status: 201 });
+  try {
+    // Public — students can submit applications
+    await connectDB();
+    const body = await req.json();
+    if (!body.studentName || !body.phone) return NextResponse.json({ error: 'Name and phone required' }, { status: 400 });
+    const app = await Application.create(body);
+    return NextResponse.json({ success: true, applicationNumber: app.applicationNumber, message: 'Application submitted successfully' }, { status: 201 });
+  } catch (err: any) {
+    console.error('Application creation error:', err);
+    return NextResponse.json({ error: err.message || 'Server error' }, { status: 500 });
+  }
 }

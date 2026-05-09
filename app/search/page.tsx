@@ -1,5 +1,5 @@
 'use client';
-import { useEffect, useState } from 'react';
+import { useEffect, useState, Suspense } from 'react';
 import { useSearchParams } from 'next/navigation';
 import Navbar from '@/components/frontend/Navbar';
 import Footer from '@/components/frontend/Footer';
@@ -8,7 +8,15 @@ import { Search, SlidersHorizontal, MapPin, Star, Shield, BookOpen, ChevronRight
 
 type SortKey = 'name' | 'rating' | 'established';
 
-export default function AdvancedSearchPage() {
+export default function SearchPageWrapper() {
+  return (
+    <Suspense fallback={<div className="min-h-screen flex items-center justify-center"><div className="animate-spin w-8 h-8 border-4 border-green-500 border-t-transparent rounded-full" /></div>}>
+      <AdvancedSearchPage />
+    </Suspense>
+  );
+}
+
+function AdvancedSearchPage() {
   const searchParams = useSearchParams();
   const [colleges, setColleges] = useState<any[]>([]);
   const [courses, setCourses] = useState<any[]>([]);

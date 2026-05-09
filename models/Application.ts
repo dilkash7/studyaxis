@@ -41,11 +41,10 @@ ApplicationSchema.index({ college: 1 });
 ApplicationSchema.index({ phone: 1 });
 
 // Auto-generate application number
-ApplicationSchema.pre('save', function (next) {
+ApplicationSchema.pre('save', function () {
   if (!this.applicationNumber) {
     this.applicationNumber = `SA-${Date.now().toString(36).toUpperCase()}-${Math.random().toString(36).slice(2, 6).toUpperCase()}`;
   }
-  next();
 });
 
 export default mongoose.models.Application || mongoose.model('Application', ApplicationSchema);

@@ -83,6 +83,24 @@ export default function OCRScannerPage() {
     const a = document.createElement('a'); a.href = url; a.download = `ocr_results_${Date.now()}.csv`; a.click();
   };
 
+  const publishToDB = async () => {
+    if (!editedCourses.length) return;
+    try {
+      const res = await axios.post('/api/ocr/publish', {
+        courses: editedCourses,
+        collegeId: result?.college?._id,
+        collegeName: result?.college?.name
+      }, { headers });
+      if (res.data.success) {
+        alert(`Successfully published ${res.data.published} courses!`);
+        setEditedCourses([]);
+        setActiveTab('upload');
+      }
+    } catch (err: any) {
+      alert(err.response?.data?.error || 'Failed to publish');
+    }
+  };
+
   const ConfBadge = ({ value }: { value: number }) => {
     const color = value >= 85 ? 'bg-green-100 text-green-700' : value >= 70 ? 'bg-yellow-100 text-yellow-700' : 'bg-red-100 text-red-700';
     return <span className={`text-xs px-2 py-0.5 rounded-full font-bold ${color}`}>{value}%</span>;
@@ -242,8 +260,9 @@ export default function OCRScannerPage() {
               <div className="flex items-center justify-between bg-white rounded-xl border border-gray-100 px-4 py-3 shadow-sm">
                 <span className="text-sm font-bold text-gray-700">{editedCourses.length} courses extracted</span>
                 <div className="flex gap-2">
-                  <button onClick={approveAll} className="flex items-center gap-1.5 bg-green-600 text-white px-3 py-1.5 rounded-lg text-xs font-bold hover:bg-green-700 transition"><Check size={12} /> Approve All</button>
-                  <button onClick={exportCSV} className="flex items-center gap-1.5 bg-blue-600 text-white px-3 py-1.5 rounded-lg text-xs font-bold hover:bg-blue-700 transition"><Download size={12} /> Export CSV</button>
+                  <button onClick={approveAll} className="flex items-center gap-1.5 bg-gray-100 text-gray-700 px-3 py-1.5 rounded-lg text-xs font-bold hover:bg-gray-200 transition"><Check size={12} /> Approve All</button>
+                  <button onClick={exportCSV} className="flex items-center gap-1.5 bg-blue-100 text-blue-700 px-3 py-1.5 rounded-lg text-xs font-bold hover:bg-blue-200 transition"><Download size={12} /> Export CSV</button>
+                  <button onClick={publishToDB} className="flex items-center gap-1.5 bg-green-600 text-white px-4 py-1.5 rounded-lg text-xs font-bold hover:bg-green-700 transition shadow-sm"><Save size={12} /> Publish to DB</button>
                 </div>
               </div>
 

@@ -120,13 +120,24 @@ export default function InquiryForm({
     setLoading(true);
     try {
       await axios.post('/api/leads', form);
+      // Also create an application record for tracking in student portal
+      if (form.college) {
+        await axios.post('/api/applications', {
+          studentName: form.name,
+          phone: form.phone,
+          email: form.email,
+          collegeName: form.college,
+          course: form.course,
+          source: 'Website Lead Form',
+        });
+      }
       const url = buildWhatsAppURL(form);
       window.open(url, '_blank');
       setSuccess(true);
       setForm({ name: '', phone: '', email: '', course: '', location: '', college: '', budget: '', stream: '' });
       setTimeout(() => setSuccess(false), 5000);
-    } catch {
-      alert('Something went wrong. Please try again.');
+    } catch (err: any) {
+      alert(err.response?.data?.error || err.message || 'Something went wrong. Please try again.');
     } finally {
       setLoading(false);
     }
