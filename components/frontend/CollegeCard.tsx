@@ -49,6 +49,8 @@ export default function CollegeCard({ college }: { college: any }) {
             <img
               src={college.image}
               alt={college.name}
+              loading="lazy"
+              decoding="async"
               className="w-full h-full object-cover group-hover:scale-105 transition duration-300"
             />
           ) : (

@@ -47,6 +47,8 @@ export default function BulkImportPage() {
     if (!editedRows.length) return;
     setSaving(true);
     let successCount = 0;
+    let lastError = '';
+    
     for (const row of editedRows) {
       try {
         await axios.post('/api/courses', {
@@ -58,15 +60,25 @@ export default function BulkImportPage() {
           specialization: row.specialization || '',
           duration: row.duration || '',
           eligibility: row.eligibility || '',
+          fee: row.fee?.amount || row.fee || '',
           source: 'bulk-import',
         }, { headers });
         successCount++;
-      } catch {}
+      } catch (err: any) {
+        console.error('Failed to import row:', row.normalizedName, err.response?.data?.error);
+        lastError = err.response?.data?.error || 'Server error';
+      }
     }
     setSaving(false);
-    setSaved(true);
-    setError('');
-    alert(`✅ Successfully imported ${successCount}/${editedRows.length} courses`);
+    
+    if (successCount === editedRows.length) {
+      setSaved(true);
+      setError('');
+      alert(`✅ Successfully imported ${successCount}/${editedRows.length} courses`);
+    } else {
+      setError(`Imported ${successCount}/${editedRows.length} courses. Last error: ${lastError}`);
+      alert(`⚠️ Imported ${successCount}/${editedRows.length} courses. Check error panel.`);
+    }
   };
 
   const exportCSV = () => {

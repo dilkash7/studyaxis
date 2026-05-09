@@ -38,9 +38,11 @@ function scoreCollege(college: any, pref: StudentPreference, courses: any[], fee
 
   // Course match
   if (pref.course) {
-    const collegeCourses = courses.filter(c => String(c.college) === String(college._id));
+    const collegeCourses = courses.filter(c => String(c.collegeId) === String(college._id));
+    // Use normalized strict matching if possible, otherwise fallback
     const courseMatch = collegeCourses.some(c =>
-      c.name?.toLowerCase().includes(pref.course!.toLowerCase())
+      (c.name || '').toLowerCase().includes(pref.course!.toLowerCase()) ||
+      (c.specialization || '').toLowerCase().includes(pref.course!.toLowerCase())
     );
     if (courseMatch) { score += 20; reasons.push(`Offers ${pref.course}`); }
   }
@@ -55,11 +57,17 @@ function scoreCollege(college: any, pref: StudentPreference, courses: any[], fee
 
   // Budget match
   if (pref.budget) {
-    const collegeFees = fees.filter(f => String(f.college) === String(college._id));
-    const minFee = Math.min(...collegeFees.map(f => f.amount || Infinity));
-    if (minFee <= pref.budget) { score += 10; reasons.push(`Within budget`); }
-    else if (minFee <= pref.budget * 1.2) { score += 5; reasons.push(`Slightly above budget`); }
-    else score -= 5;
+    const collegeFees = fees.filter(f => String(f.collegeId) === String(college._id));
+    // totalFee is stored as a string like "50000" or "1.5L"
+    const minFee = collegeFees.length > 0 
+      ? Math.min(...collegeFees.map(f => parseInt((f.totalFee || '0').replace(/[^0-9]/g, ''), 10) || Infinity))
+      : Infinity;
+      
+    if (minFee !== Infinity) {
+      if (minFee <= pref.budget) { score += 10; reasons.push(`Within budget`); }
+      else if (minFee <= pref.budget * 1.2) { score += 5; reasons.push(`Slightly above budget`); }
+      else score -= 5;
+    }
   }
 
   // Abroad preference

@@ -130,7 +130,11 @@ export default function FeesPage() {
                 <td className="px-4 py-3 font-medium text-gray-800">{f.collegeName || '—'}</td>
                 <td className="px-4 py-3 text-gray-600">{f.courseName || '—'}</td>
                 <td className="px-4 py-3">
-                  {f.admissionCategoryName ? <span className="text-xs bg-purple-100 text-purple-700 px-2 py-1 rounded-full font-bold">{f.admissionCategoryName}</span> : '—'}
+                  {f.source?.verified ? (
+                    <span className="text-xs bg-green-100 text-green-700 px-2 py-1 rounded-full font-bold flex items-center gap-1 w-max">Verified</span>
+                  ) : (
+                    <span className="text-xs bg-red-100 text-red-700 px-2 py-1 rounded-full font-bold w-max">Unverified</span>
+                  )}
                 </td>
                 <td className="px-4 py-3 text-green-600 font-semibold">{f.bookingAmount || '—'}</td>
                 <td className="px-4 py-3 text-green-600 font-semibold">{f.totalFee || '—'}</td>
@@ -254,7 +258,10 @@ export default function FeesPage() {
               <option value="student">Student Uploaded</option>
               <option value="third-party">Third Party</option>
             </select>
-            <input placeholder="Source URL (optional)" value={form.source?.sourceUrl || ''} onChange={e => setForm({ ...form, source: { ...form.source, sourceUrl: e.target.value } })} className="w-full border border-gray-300 rounded-lg px-3 py-1.5 text-sm text-gray-800 bg-white" />
+            <input placeholder="Source URL (optional)" value={form.source?.sourceUrl || ''} onChange={e => setForm({ ...form, source: { ...form.source, sourceUrl: e.target.value } })} className="w-full border border-gray-300 rounded-lg px-3 py-1.5 text-sm text-gray-800 bg-white mb-3" />
+            <label className="flex items-center gap-2 text-sm text-gray-700 cursor-pointer font-bold">
+              <input type="checkbox" checked={form.source?.verified || false} onChange={e => setForm({ ...form, source: { ...form.source, verified: e.target.checked } })} className="w-4 h-4 accent-green-600" /> Mark Source as Verified & Authentic
+            </label>
           </div>
 
           {/* Checkboxes */}

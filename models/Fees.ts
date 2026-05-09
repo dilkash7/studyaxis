@@ -79,4 +79,9 @@ const FeesSchema = new mongoose.Schema({
   active: { type: Boolean, default: true },
 }, { timestamps: true });
 
+// ── Performance Optimization: Database Indexes ──
+FeesSchema.index({ collegeId: 1 });
+FeesSchema.index({ courseId: 1 });
+FeesSchema.index({ 'source.verified': 1 });
+
 export default mongoose.models.Fees || mongoose.model('Fees', FeesSchema);

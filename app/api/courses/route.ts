@@ -26,6 +26,13 @@ export async function POST(req: NextRequest) {
     await connectDB();
     const body = await req.json();
 
+    // Use the new Master Normalization System to enforce canonical names
+    if (body.name) {
+      const classified = require('@/lib/courseClassifier').fullClassify(body.name);
+      body.rawName = body.name; // Keep history
+      body.name = classified.normalizedName || body.name;
+    }
+
     // Auto-generate slug + SEO if not provided
     if (!body.slug && body.name) body.slug = generateSlug(`${body.collegeName || ''}-${body.name}`);
     if (!body.metaTitle && body.name) {
@@ -37,8 +44,29 @@ export async function POST(req: NextRequest) {
 
     const course = await Course.create(body);
     await logAdminAction({ adminId: user.id, adminName: user.name, action: 'create', module: 'courses', description: `Created course: ${body.name}`, targetId: course._id, targetName: body.name });
+    
+    // Automatically parse and attach Fee structure if provided
+    if (body.fee) {
+      try {
+        const feeAmount = typeof body.fee === 'object' ? body.fee.display || String(body.fee.amount) : String(body.fee);
+        const Fees = require('@/models/Fees').default || require('@/models/Fees');
+        await Fees.create({
+          courseId: course._id,
+          courseName: course.name,
+          collegeId: course.collegeId,
+          collegeName: course.collegeName,
+          feeCategory: 'General',
+          totalFee: feeAmount,
+          source: { sourceType: 'admin', verified: false }
+        });
+      } catch (e: any) {
+        console.error('Fee creation warning:', e.message);
+      }
+    }
+
     return NextResponse.json({ success: true, course });
-  } catch (err) {
-    return NextResponse.json({ error: 'Server error' }, { status: 500 });
+  } catch (err: any) {
+    console.error('Course creation error:', err.message);
+    return NextResponse.json({ error: err.message || 'Server error' }, { status: 500 });
   }
 }

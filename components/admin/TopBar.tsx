@@ -51,6 +51,7 @@ export default function TopBar({ title }: { title: string }) {
         {/* Notifications Bell */}
         <div className="relative">
           <button
+            suppressHydrationWarning
             onClick={() => { setShowNotifs(!showNotifs); setUnread(0); }}
             className="p-2 rounded-full hover:bg-gray-100 transition relative">
             <Bell size={20} className="text-gray-600" />

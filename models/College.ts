@@ -86,4 +86,10 @@ CollegeSchema.pre('save', async function () {
 
 CollegeSchema.index({ slug: 1 });
 
+// ── Performance Optimization: Database Indexes ──
+CollegeSchema.index({ name: 'text', city: 'text', state: 'text' });
+CollegeSchema.index({ featured: -1, createdAt: -1 });
+CollegeSchema.index({ type: 1, city: 1, country: 1 });
+CollegeSchema.index({ active: 1 });
+
 export default mongoose.models.College || mongoose.model('College', CollegeSchema);

@@ -31,11 +31,15 @@ export async function POST(req: NextRequest) {
 
         // Auto-classify
         const classified = fullClassify(name);
-        const slug = generateSlug(`${collegeName}-${name}`);
-        const seo = generateSEO(collegeName, name);
+        // Use the strict canonical name for database storage
+        const finalName = classified.normalizedName || name;
+        
+        const slug = generateSlug(`${collegeName}-${finalName}`);
+        const seo = generateSEO(collegeName, finalName);
 
         const courseData: any = {
-          name,
+          name: finalName,
+          rawName: name, // Keep the original just in case
           collegeId,
           collegeName,
           slug,

@@ -47,14 +47,42 @@ export default function CourseDetailPage() {
       }
 
       setLoading(false);
+      
+      // Update SEO Meta Tags
+      document.title = `${courseData.name} at ${courseData.collegeName || 'College'} — Fees, Admission | StudyAxis`;
+      const metaDesc = document.querySelector('meta[name="description"]');
+      if (metaDesc) metaDesc.setAttribute('content', `Get details about ${courseData.name} at ${courseData.collegeName}. Check fee structure, eligibility, admission process, and more.`);
+      
     }).catch(() => setLoading(false));
   }, [id]);
 
   if (loading) return <div className="min-h-screen bg-gray-50"><Navbar /><Loader /></div>;
   if (!course) return <div className="min-h-screen bg-gray-50"><Navbar /><div className="p-10 text-center text-gray-400">Course not found</div></div>;
 
+  // Generate Google Rich Results Schema
+  const jsonLd = {
+    '@context': 'https://schema.org',
+    '@type': 'EducationalOccupationalProgram',
+    name: course.name,
+    description: course.description || `Study ${course.name} at ${course.collegeName}`,
+    educationalCredentialAwarded: course.degreeType,
+    timeToComplete: course.duration ? `P${parseInt(course.duration)}Y` : undefined,
+    provider: {
+      '@type': 'CollegeOrUniversity',
+      name: course.collegeName,
+      url: `https://studyaxis.com/college/${course.collegeId}`
+    },
+    hasCourse: {
+      '@type': 'Course',
+      name: course.name,
+      courseCode: course.specialization
+    },
+    educationalProgramMode: 'full-time'
+  };
+
   return (
     <div className="min-h-screen" style={{ background: 'linear-gradient(180deg, #f0fdf4 0%, #f8fafc 100%)' }}>
+      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }} />
       <Navbar />
 
       {/* Breadcrumb */}

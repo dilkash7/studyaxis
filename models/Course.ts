@@ -1,7 +1,8 @@
 import mongoose from 'mongoose';
 
 const CourseSchema = new mongoose.Schema({
-  name: { type: String, required: true },
+  name: { type: String, required: true }, // The strict, normalized canonical name
+  rawName: { type: String }, // The original name from user/OCR
   slug: { type: String, unique: true, sparse: true },
   description: { type: String },
   duration: { type: String }, // e.g., "4 Years", "2 Years"
@@ -9,15 +10,7 @@ const CourseSchema = new mongoose.Schema({
   icon: { type: String },
   
   // Hierarchical Course Classification
-  mainCategory: {
-    type: String,
-    enum: [
-      'Engineering', 'Medical', 'Management', 'Arts', 'Commerce', 'Law',
-      'Pharmacy', 'Nursing', 'Allied Health Sciences', 'Science', 'Design',
-      'Agriculture', 'Paramedical', 'Aviation', 'Hotel Management',
-      'Computer Applications', 'Education', 'Other'
-    ],
-  },
+  mainCategory: { type: String },
   degreeType: { type: String }, // e.g. B.Tech, MBBS, MBA, BCA, Diploma
   specialization: { type: String }, // e.g. Computer Science, AI & ML
   
@@ -28,11 +21,7 @@ const CourseSchema = new mongoose.Schema({
   campusName: { type: String },
   
   // Course Level
-  courseType: {
-    type: String,
-    enum: ['UG', 'PG', 'Diploma', 'Doctorate', 'Certificate', 'Other'],
-    default: 'UG'
-  },
+  courseType: { type: String, default: 'UG' },
   seats: { type: Number },
   eligibility: { type: String },
   entranceExam: { type: String }, // e.g. NEET, JEE, KCET
@@ -49,5 +38,12 @@ const CourseSchema = new mongoose.Schema({
   metaDescription: { type: String },
   metaKeywords: { type: String },
 }, { timestamps: true });
+
+// ── Performance Optimization: Database Indexes ──
+CourseSchema.index({ collegeId: 1 });
+CourseSchema.index({ campusId: 1 });
+CourseSchema.index({ mainCategory: 1, degreeType: 1 });
+CourseSchema.index({ name: 'text', specialization: 'text' });
+CourseSchema.index({ slug: 1 });
 
 export default mongoose.models.Course || mongoose.model('Course', CourseSchema);

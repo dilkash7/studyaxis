@@ -326,10 +326,25 @@ export function generateSEO(collegeName: string, courseName?: string) {
   };
 }
 
+export function getNormalizedCourseName(degreeType: string, specialization: string, rawName: string): string {
+  if (degreeType && specialization) {
+    // Some degrees traditionally use "in" or hyphen, but space is most canonical for search
+    return `${degreeType} ${specialization}`.trim();
+  }
+  if (degreeType) return degreeType.trim();
+  
+  // Fallback cleanup if degree isn't recognized
+  let clean = rawName.trim().replace(/\s+/g, ' ');
+  // Fix common case issues like "b.e" -> "B.E"
+  return clean.charAt(0).toUpperCase() + clean.slice(1);
+}
+
 // ── Full Classification with all fields ──
 export function fullClassify(courseName: string) {
   const base = classifyCourse(courseName);
   const duration = detectDuration(base.degreeType);
   const eligibility = detectEligibility(base.courseType, base.mainCategory);
-  return { ...base, duration, eligibility };
+  const normalizedName = getNormalizedCourseName(base.degreeType, base.specialization, courseName);
+  
+  return { ...base, duration, eligibility, normalizedName };
 }
