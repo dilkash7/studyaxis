@@ -67,16 +67,20 @@ export default function CollegeDetailPage() {
   const [courseTypeFilter, setCourseTypeFilter] = useState('all');
 
   useEffect(() => {
-    Promise.all([
-      axios.get(`/api/colleges/${id}`),
-      axios.get(`/api/courses?collegeId=${id}`),
-      axios.get(`/api/fees?collegeId=${id}`).catch(() => ({ data: [] })),
-      axios.get(`/api/media?collegeId=${id}`),
-      axios.get(`/api/brochures?collegeId=${id}`),
-      axios.get(`/api/campuses?collegeId=${id}`),
-      axios.get(`/api/college-details/${id}`).catch(() => ({ data: { sections: [], faqs: [] } })),
-    ]).then(([c, co, f, m, b, ca, d]) => {
-      setCollege(c.data);
+    // Step 1: Fetch college (works with both ObjectId and slug)
+    axios.get(`/api/colleges/${id}`).then(async (c) => {
+      const collegeData = c.data;
+      setCollege(collegeData);
+      // Step 2: Use the real ObjectId for all sub-API calls
+      const realId = collegeData._id;
+      const [co, f, m, b, ca, d] = await Promise.all([
+        axios.get(`/api/courses?collegeId=${realId}`),
+        axios.get(`/api/fees?collegeId=${realId}`).catch(() => ({ data: [] })),
+        axios.get(`/api/media?collegeId=${realId}`),
+        axios.get(`/api/brochures?collegeId=${realId}`),
+        axios.get(`/api/campuses?collegeId=${realId}`),
+        axios.get(`/api/college-details/${realId}`).catch(() => ({ data: { sections: [], faqs: [] } })),
+      ]);
       setCourses(co.data || []);
       setFees(Array.isArray(f.data) ? f.data : []);
       setMedia(m.data?.data || []);
