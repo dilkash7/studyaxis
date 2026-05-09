@@ -1,6 +1,6 @@
 'use client';
 import { useEffect, useState } from 'react';
-import { useParams } from 'next/navigation';
+import { useParams, useRouter } from 'next/navigation';
 import axios from 'axios';
 import Link from 'next/link';
 import Navbar from '@/components/frontend/Navbar';
@@ -51,6 +51,7 @@ function SourceBadge({ source }: { source?: any }) {
 
 export default function CollegeDetailPage() {
   const { id } = useParams();
+  const router = useRouter();
   const [college, setCollege] = useState<any>(null);
   const [courses, setCourses] = useState<any[]>([]);
   const [fees, setFees] = useState<any[]>([]);
@@ -89,14 +90,32 @@ export default function CollegeDetailPage() {
   const getSection = (type: string) =>
     detail?.sections?.find((s: any) => s.sectionType === type && s.active !== false);
 
-  // Dynamic SEO — update document title (must be before early returns)
+  // Dynamic SEO + ObjectId→slug redirect (must be before early returns)
   useEffect(() => {
     if (college) {
+      // Redirect ObjectId URLs to slug URLs
+      const isObjectId = /^[0-9a-fA-F]{24}$/.test(String(id));
+      if (isObjectId && college.slug) {
+        router.replace(`/college/${college.slug}`, { scroll: false });
+      }
+
       document.title = `${college.metaTitle || college.name} — Courses, Fees, Admission | StudyAxis`;
       const metaDesc = document.querySelector('meta[name="description"]');
       if (metaDesc) metaDesc.setAttribute('content', college.metaDescription || `${college.name} — courses, fees, placements, admission process. ${college.city || ''} ${college.state || ''}`);
+
+      // OG tags
+      const setMeta = (prop: string, content: string) => {
+        let el = document.querySelector(`meta[property="${prop}"]`);
+        if (!el) { el = document.createElement('meta'); el.setAttribute('property', prop); document.head.appendChild(el); }
+        el.setAttribute('content', content);
+      };
+      setMeta('og:title', college.metaTitle || college.name);
+      setMeta('og:description', college.metaDescription || `${college.name} — courses, fees, admission`);
+      setMeta('og:type', 'website');
+      setMeta('og:url', `https://studyaxis.com/college/${college.slug || id}`);
+      if (college.image) setMeta('og:image', college.image);
     }
-  }, [college]);
+  }, [college, id, router]);
 
   if (loading) return <div className="min-h-screen bg-gray-50"><Navbar /><Loader /></div>;
   if (!college) return (

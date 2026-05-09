@@ -4,6 +4,7 @@ import College from '@/models/College';
 import { NextRequest, NextResponse } from 'next/server';
 import { requireAuth } from '@/lib/auth';
 import { logAdminAction } from '@/lib/adminLog';
+import { sanitizeObjectIds } from '@/lib/objectId';
 
 export async function GET(
   req: NextRequest,
@@ -41,7 +42,8 @@ export async function PUT(
     await connectDB();
     
     const data = await req.json();
-    const campus = await Campus.findByIdAndUpdate(id, data, { new: true })
+    const cleanData = sanitizeObjectIds(data, ['collegeId']);
+    const campus = await Campus.findByIdAndUpdate(id, cleanData, { new: true })
       .populate('collegeId', 'name');
     
     if (!campus) {

@@ -10,36 +10,20 @@ export default async function sitemap() {
     
     // Static routes
     const staticRoutes = [
-      {
-        url: baseUrl,
-        lastModified: new Date(),
-        changeFrequency: 'daily',
-        priority: 1,
-      },
-      {
-        url: `${baseUrl}/india`,
-        lastModified: new Date(),
-        changeFrequency: 'weekly',
-        priority: 0.9,
-      },
-      {
-        url: `${baseUrl}/abroad`,
-        lastModified: new Date(),
-        changeFrequency: 'weekly',
-        priority: 0.9,
-      },
-      {
-        url: `${baseUrl}/search`,
-        lastModified: new Date(),
-        changeFrequency: 'daily',
-        priority: 0.8,
-      },
-      {
-        url: `${baseUrl}/apply`,
-        lastModified: new Date(),
-        changeFrequency: 'weekly',
-        priority: 0.8,
-      },
+      { url: baseUrl, lastModified: new Date(), changeFrequency: 'daily', priority: 1 },
+      { url: `${baseUrl}/india`, lastModified: new Date(), changeFrequency: 'weekly', priority: 0.9 },
+      { url: `${baseUrl}/abroad`, lastModified: new Date(), changeFrequency: 'weekly', priority: 0.9 },
+      { url: `${baseUrl}/search`, lastModified: new Date(), changeFrequency: 'daily', priority: 0.8 },
+      { url: `${baseUrl}/apply`, lastModified: new Date(), changeFrequency: 'weekly', priority: 0.8 },
+      { url: `${baseUrl}/scholarships`, lastModified: new Date(), changeFrequency: 'weekly', priority: 0.8 },
+      { url: `${baseUrl}/faqs`, lastModified: new Date(), changeFrequency: 'weekly', priority: 0.7 },
+      { url: `${baseUrl}/notices`, lastModified: new Date(), changeFrequency: 'daily', priority: 0.7 },
+      { url: `${baseUrl}/blog`, lastModified: new Date(), changeFrequency: 'daily', priority: 0.8 },
+      { url: `${baseUrl}/career-guidance`, lastModified: new Date(), changeFrequency: 'monthly', priority: 0.7 },
+      { url: `${baseUrl}/visa-guidance`, lastModified: new Date(), changeFrequency: 'monthly', priority: 0.7 },
+      { url: `${baseUrl}/compare`, lastModified: new Date(), changeFrequency: 'weekly', priority: 0.6 },
+      { url: `${baseUrl}/callback`, lastModified: new Date(), changeFrequency: 'monthly', priority: 0.6 },
+      { url: `${baseUrl}/college-finder`, lastModified: new Date(), changeFrequency: 'weekly', priority: 0.8 },
     ];
     
     // Dynamic college routes
