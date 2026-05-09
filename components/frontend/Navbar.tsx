@@ -14,9 +14,11 @@ const NAV_LINKS = [
 const EXPLORE_LINKS = [
   { href: '/india', label: '🇮🇳 Study in India', desc: 'Top colleges across India' },
   { href: '/abroad', label: '🌍 Study Abroad', desc: 'MBBS, Engineering & more' },
+  { href: '/scholarships', label: '🎓 Scholarships', desc: 'Merit, govt & private aid' },
   { href: '/visa-guidance', label: '✈️ Visa Guidance', desc: 'Step-by-step visa help' },
   { href: '/career-guidance', label: '💼 Career Guidance', desc: 'Expert career counselling' },
   { href: '/blog', label: '📰 Blog & News', desc: 'Latest education updates' },
+  { href: '/faqs', label: '❓ FAQs', desc: 'Common questions answered' },
   { href: '/compare', label: '⚖️ Compare Colleges', desc: 'Side-by-side comparison' },
 ];
 
@@ -27,11 +29,13 @@ const MOBILE_LINKS = [
   { href: '/india', label: '🇮🇳 Study in India' },
   { href: '/abroad', label: '🌍 Study Abroad' },
   { href: '/apply', label: '📝 Apply Now' },
+  { href: '/scholarships', label: '🎓 Scholarships' },
   { href: '/visa-guidance', label: '✈️ Visa Guidance' },
   { href: '/career-guidance', label: '💼 Career Guidance' },
   { href: '/blog', label: '📰 Blog & News' },
+  { href: '/faqs', label: '❓ FAQs' },
+  { href: '/notices', label: '🔔 Notices' },
   { href: '/callback', label: '📞 Request Callback' },
-  { href: '/student-portal', label: '🎓 Student Portal' },
   { href: '/compare', label: '⚖️ Compare Colleges' },
   { href: '/saved', label: '❤️ Saved Colleges' },
 ];

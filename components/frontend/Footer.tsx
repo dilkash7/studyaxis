@@ -73,6 +73,8 @@ export default function Footer() {
               { href: '/abroad', label: 'Study Abroad' },
               { href: '/apply', label: 'Apply Now' },
               { href: '/search', label: 'Search Colleges' },
+              { href: '/college-finder', label: 'College Finder' },
+              { href: '/compare', label: 'Compare Colleges' },
             ].map(l => (
               <li key={l.href}>
                 <Link href={l.href} className="hover:text-green-400 transition">{l.label}</Link>
@@ -82,10 +84,20 @@ export default function Footer() {
         </div>
 
         <div>
-          <h4 className="font-semibold text-white mb-4">Courses</h4>
-          <ul className="space-y-2 text-sm text-gray-400">
-            {['MBBS in India', 'MBBS Abroad', 'Engineering', 'Nursing', 'BDS'].map(c => (
-              <li key={c}>{c}</li>
+          <h4 className="font-semibold text-white mb-4">Resources</h4>
+          <ul className="space-y-2 text-sm">
+            {[
+              { href: '/scholarships', label: 'Scholarships' },
+              { href: '/faqs', label: 'FAQs' },
+              { href: '/notices', label: 'Notice Board' },
+              { href: '/blog', label: 'Blog & News' },
+              { href: '/career-guidance', label: 'Career Guidance' },
+              { href: '/visa-guidance', label: 'Visa Guidance' },
+              { href: '/callback', label: 'Request Callback' },
+            ].map(l => (
+              <li key={l.href}>
+                <Link href={l.href} className="hover:text-green-400 transition">{l.label}</Link>
+              </li>
             ))}
           </ul>
         </div>
@@ -112,6 +124,15 @@ export default function Footer() {
               </li>
             )}
           </ul>
+          <div className="mt-4">
+            <h5 className="text-xs font-bold text-gray-500 uppercase tracking-wider mb-2">Popular Streams</h5>
+            <div className="flex flex-wrap gap-1.5">
+              {['MBBS', 'Engineering', 'MBA', 'Nursing', 'Law'].map(c => (
+                <Link key={c} href={`/search?stream=${encodeURIComponent(c)}`}
+                  className="text-xs bg-gray-800 text-gray-400 px-2 py-1 rounded-lg hover:text-green-400 hover:bg-gray-700 transition">{c}</Link>
+              ))}
+            </div>
+          </div>
         </div>
       </div>
 

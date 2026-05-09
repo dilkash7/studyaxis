@@ -3,6 +3,7 @@ import Footer from '@/components/frontend/Footer';
 import HeroSection from '@/components/frontend/HeroSection';
 import ServicesSection from '@/components/frontend/ServicesSection';
 import InquiryForm from '@/components/frontend/InquiryForm';
+import HomepageDynamic from '@/components/frontend/HomepageDynamic';
 import Link from 'next/link';
 
 export default function Home() {
@@ -101,6 +102,8 @@ export default function Home() {
           </div>
         </div>
       </section>
+
+      <HomepageDynamic />
 
       {/* CTA + Form */}
       <section className="py-20 px-6" style={{ background: 'linear-gradient(135deg, #f0fdf4 0%, #eff6ff 100%)' }}>
