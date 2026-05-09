@@ -89,6 +89,15 @@ export default function CollegeDetailPage() {
   const getSection = (type: string) =>
     detail?.sections?.find((s: any) => s.sectionType === type && s.active !== false);
 
+  // Dynamic SEO — update document title (must be before early returns)
+  useEffect(() => {
+    if (college) {
+      document.title = `${college.metaTitle || college.name} — Courses, Fees, Admission | StudyAxis`;
+      const metaDesc = document.querySelector('meta[name="description"]');
+      if (metaDesc) metaDesc.setAttribute('content', college.metaDescription || `${college.name} — courses, fees, placements, admission process. ${college.city || ''} ${college.state || ''}`);
+    }
+  }, [college]);
+
   if (loading) return <div className="min-h-screen bg-gray-50"><Navbar /><Loader /></div>;
   if (!college) return (
     <div className="min-h-screen bg-gray-50"><Navbar />
@@ -100,8 +109,28 @@ export default function CollegeDetailPage() {
     </div>
   );
 
+  // JSON-LD Schema (not a hook, safe after returns)
+  const jsonLd = {
+    '@context': 'https://schema.org',
+    '@type': 'CollegeOrUniversity',
+    name: college.name,
+    url: college.website || `https://studyaxis.com/college/${college.slug || id}`,
+    address: {
+      '@type': 'PostalAddress',
+      addressLocality: college.city,
+      addressRegion: college.state,
+      addressCountry: college.country || 'IN',
+    },
+    ...(college.rating ? { aggregateRating: { '@type': 'AggregateRating', ratingValue: college.rating, bestRating: 5 } } : {}),
+    ...(college.established ? { foundingDate: college.established } : {}),
+    ...(college.accreditation ? { hasCredential: { '@type': 'EducationalOccupationalCredential', credentialCategory: college.accreditation } } : {}),
+    ...(college.image ? { image: college.image } : {}),
+    ...(college.description ? { description: college.description.slice(0, 300) } : {}),
+  };
+
   return (
     <div className="min-h-screen" style={{ background: 'linear-gradient(180deg, #f0fdf4 0%, #f8fafc 100%)' }}>
+      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }} />
       <Navbar />
       {/* Breadcrumb — SEO optimized */}
       <nav className="bg-white border-b px-4 sm:px-6 py-3" aria-label="Breadcrumb">
