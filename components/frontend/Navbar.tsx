@@ -74,6 +74,7 @@ export default function Navbar() {
           <Link href="/apply" className="text-gray-600 hover:text-green-600 font-medium transition text-sm">Apply</Link>
           <Link href="/visa-guidance" className="text-gray-600 hover:text-green-600 font-medium transition text-sm">Visa</Link>
           <Link href="/career-guidance" className="text-gray-600 hover:text-green-600 font-medium transition text-sm">Careers</Link>
+          <Link href="/blog" className="text-gray-600 hover:text-green-600 font-medium transition text-sm">Blog</Link>
           <Link href="/compare" className="text-gray-600 hover:text-green-600 font-medium transition text-sm flex items-center gap-1"><ArrowLeftRight size={13} /> Compare</Link>
           <Link href="/saved" className="text-gray-600 hover:text-red-500 font-medium transition text-sm flex items-center gap-1"><Heart size={13} /> Saved</Link>
           <Link href="/admin/login" className="text-gray-500 hover:text-green-600 text-xs border border-gray-200 px-3 py-1 rounded-full transition">Admin</Link>
@@ -115,6 +116,8 @@ export default function Navbar() {
             { href: '/apply', label: 'Apply Now' },
             { href: '/visa-guidance', label: '✈️ Visa Guidance' },
             { href: '/career-guidance', label: '💼 Career Guidance' },
+            { href: '/blog', label: '📰 Blog & News' },
+            { href: '/callback', label: '📞 Request Callback' },
             { href: '/compare', label: '⚖️ Compare Colleges' },
             { href: '/saved', label: '❤️ Saved Colleges' },
             { href: '/admin/login', label: 'Admin Login' },
