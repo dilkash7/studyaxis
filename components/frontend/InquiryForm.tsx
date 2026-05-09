@@ -90,6 +90,8 @@ export default function InquiryForm({
     course: preselectedCourse,
     location: '',
     college: preselectedCollege,
+    budget: '',
+    stream: '',
   });
   const [loading, setLoading] = useState(false);
   const [success, setSuccess] = useState(false);
@@ -121,7 +123,7 @@ export default function InquiryForm({
       const url = buildWhatsAppURL(form);
       window.open(url, '_blank');
       setSuccess(true);
-      setForm({ name: '', phone: '', email: '', course: '', location: '', college: '' });
+      setForm({ name: '', phone: '', email: '', course: '', location: '', college: '', budget: '', stream: '' });
       setTimeout(() => setSuccess(false), 5000);
     } catch {
       alert('Something went wrong. Please try again.');
@@ -218,6 +220,30 @@ export default function InquiryForm({
         onChange={val => setForm({ ...form, college: val })}
         suggestions={colleges}
       />
+
+      {/* Stream */}
+      <div>
+        <label className="block text-xs font-semibold text-gray-600 mb-1">Preferred Stream</label>
+        <select value={form.stream} onChange={e => setForm({ ...form, stream: e.target.value })}
+          className="w-full border border-gray-300 rounded-xl px-4 py-2.5 text-sm text-gray-800 bg-white focus:outline-none focus:ring-2 focus:ring-green-400">
+          <option value="">Select stream...</option>
+          {['Medical', 'Engineering', 'Management', 'Law', 'Arts & Science', 'Pharmacy', 'Nursing', 'Education', 'Abroad'].map(s => (
+            <option key={s} value={s}>{s}</option>
+          ))}
+        </select>
+      </div>
+
+      {/* Budget */}
+      <div>
+        <label className="block text-xs font-semibold text-gray-600 mb-1">Annual Budget</label>
+        <select value={form.budget} onChange={e => setForm({ ...form, budget: e.target.value })}
+          className="w-full border border-gray-300 rounded-xl px-4 py-2.5 text-sm text-gray-800 bg-white focus:outline-none focus:ring-2 focus:ring-green-400">
+          <option value="">Select budget range...</option>
+          {['Under ₹1 Lakh', '₹1-3 Lakhs', '₹3-5 Lakhs', '₹5-10 Lakhs', '₹10-20 Lakhs', '₹20+ Lakhs'].map(b => (
+            <option key={b} value={b}>{b}</option>
+          ))}
+        </select>
+      </div>
 
       <button
         type="submit"

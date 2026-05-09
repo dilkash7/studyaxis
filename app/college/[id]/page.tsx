@@ -62,6 +62,8 @@ export default function CollegeDetailPage() {
   const [activeTab, setActiveTab] = useState('overview');
   const [openFaq, setOpenFaq] = useState<number | null>(null);
   const [lightbox, setLightbox] = useState<string | null>(null);
+  const [courseSearch, setCourseSearch] = useState('');
+  const [courseTypeFilter, setCourseTypeFilter] = useState('all');
 
   useEffect(() => {
     Promise.all([
@@ -101,52 +103,108 @@ export default function CollegeDetailPage() {
   return (
     <div className="min-h-screen" style={{ background: 'linear-gradient(180deg, #f0fdf4 0%, #f8fafc 100%)' }}>
       <Navbar />
-      {/* Breadcrumb */}
-      <div className="bg-white border-b px-4 sm:px-6 py-3">
-        <div className="max-w-7xl mx-auto flex items-center gap-2 text-sm text-gray-500 flex-wrap">
-          <Link href="/" className="hover:text-green-600 transition">Home</Link>
-          <ChevronRight size={14} />
-          <Link href={college.type === 'india' ? '/india' : '/abroad'} className="hover:text-green-600 transition">
-            {college.type === 'india' ? '🇮🇳 India' : '🌍 Abroad'}
-          </Link>
-          <ChevronRight size={14} />
-          <span className="text-gray-800 font-medium break-words">{college.name}</span>
-        </div>
-      </div>
+      {/* Breadcrumb — SEO optimized */}
+      <nav className="bg-white border-b px-4 sm:px-6 py-3" aria-label="Breadcrumb">
+        <ol className="max-w-7xl mx-auto flex items-center gap-1.5 text-sm text-gray-500 flex-wrap" itemScope itemType="https://schema.org/BreadcrumbList">
+          <li itemProp="itemListElement" itemScope itemType="https://schema.org/ListItem">
+            <Link href="/" className="hover:text-green-600 transition" itemProp="item"><span itemProp="name">Home</span></Link>
+            <meta itemProp="position" content="1" />
+          </li>
+          <ChevronRight size={12} className="text-gray-300" />
+          <li itemProp="itemListElement" itemScope itemType="https://schema.org/ListItem">
+            <Link href={college.type === 'india' ? '/india' : '/abroad'} className="hover:text-green-600 transition" itemProp="item">
+              <span itemProp="name">{college.type === 'india' ? 'India' : 'Abroad'}</span>
+            </Link>
+            <meta itemProp="position" content="2" />
+          </li>
+          {college.state && (<><ChevronRight size={12} className="text-gray-300" />
+            <li itemProp="itemListElement" itemScope itemType="https://schema.org/ListItem">
+              <Link href={`/search?state=${encodeURIComponent(college.state)}`} className="hover:text-green-600 transition" itemProp="item">
+                <span itemProp="name">{college.state}</span>
+              </Link>
+              <meta itemProp="position" content="3" />
+            </li>
+          </>)}
+          {college.city && (<><ChevronRight size={12} className="text-gray-300" />
+            <li itemProp="itemListElement" itemScope itemType="https://schema.org/ListItem">
+              <Link href={`/search?city=${encodeURIComponent(college.city)}`} className="hover:text-green-600 transition" itemProp="item">
+                <span itemProp="name">{college.city}</span>
+              </Link>
+              <meta itemProp="position" content="4" />
+            </li>
+          </>)}
+          <ChevronRight size={12} className="text-gray-300" />
+          <li className="text-gray-800 font-medium break-words truncate max-w-[200px] sm:max-w-none">{college.name}</li>
+        </ol>
+      </nav>
 
       <div className="max-w-7xl mx-auto px-4 sm:px-6 py-8">
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
           <div className="lg:col-span-2 space-y-6">
-            {/* Banner */}
-            <div className="w-full h-56 sm:h-72 rounded-2xl overflow-hidden bg-gradient-to-br from-green-400 to-green-700 shadow-lg">
-              {college.image ? (
-                <img src={college.image} alt={college.name} className="w-full h-full object-cover" />
-              ) : (
-                <div className="w-full h-full flex items-center justify-center text-7xl">🏫</div>
-              )}
-            </div>
 
-            {/* College Header Card */}
-            <div className="bg-white rounded-2xl p-5 sm:p-6 shadow-sm border border-gray-100">
-              <h1 className="text-2xl sm:text-3xl font-extrabold text-gray-900 mb-4">{college.name}</h1>
-              <div className="flex flex-wrap gap-2 mb-4">
-                <span className="flex items-center gap-1.5 text-sm text-gray-600 bg-gray-50 px-3 py-1.5 rounded-full border border-gray-200">
-                  <MapPin size={14} className="text-green-500" /> {college.city || college.country || 'N/A'}
-                </span>
-                <span className="flex items-center gap-1.5 text-sm text-gray-600 bg-gray-50 px-3 py-1.5 rounded-full border border-gray-200">
-                  <Star size={14} className="text-yellow-500" fill="currentColor" /> {college.rating || 4.0}
-                </span>
-                {college.established && (
-                  <span className="flex items-center gap-1.5 text-sm text-gray-600 bg-gray-50 px-3 py-1.5 rounded-full border border-gray-200">
-                    <Building2 size={14} className="text-blue-500" /> Est. {college.established}
-                  </span>
+            {/* ── Premium Hero ── */}
+            <div className="relative w-full rounded-2xl overflow-hidden shadow-lg">
+              <div className="h-56 sm:h-72 bg-gradient-to-br from-green-600 to-green-800">
+                {college.image ? (
+                  <img src={college.image} alt={college.name} className="w-full h-full object-cover opacity-80" />
+                ) : (
+                  <div className="w-full h-full flex items-center justify-center text-7xl opacity-50">🏫</div>
                 )}
-                {college.accreditation && (
-                  <span className="flex items-center gap-1.5 text-sm text-gray-600 bg-yellow-50 px-3 py-1.5 rounded-full border border-yellow-200">
-                    <Shield size={14} className="text-yellow-600" /> {college.accreditation}
-                  </span>
+                <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/30 to-transparent" />
+              </div>
+              <div className="absolute bottom-0 left-0 right-0 p-5 sm:p-6 text-white">
+                <div className="flex flex-wrap gap-2 mb-2">
+                  {college.accreditation && (
+                    <span className="text-xs font-bold bg-yellow-400/90 text-yellow-900 px-2.5 py-0.5 rounded-full flex items-center gap-1"><Shield size={10} /> {college.accreditation}</span>
+                  )}
+                  {college.verified && (
+                    <span className="text-xs font-bold bg-green-500/90 text-white px-2.5 py-0.5 rounded-full">✅ Verified</span>
+                  )}
+                  {college.type && (
+                    <span className="text-xs font-bold bg-white/20 text-white px-2.5 py-0.5 rounded-full backdrop-blur-sm">{college.type === 'india' ? '🇮🇳 India' : '🌍 Abroad'}</span>
+                  )}
+                </div>
+                <h1 className="text-xl sm:text-3xl font-extrabold leading-tight mb-2 drop-shadow-lg">{college.name}</h1>
+                <div className="flex flex-wrap items-center gap-3 text-sm text-white/90">
+                  {(college.city || college.country) && (
+                    <span className="flex items-center gap-1"><MapPin size={13} /> {[college.city, college.state, college.country].filter(Boolean).join(', ')}</span>
+                  )}
+                  <span className="flex items-center gap-1"><Star size={13} className="text-yellow-400" fill="currentColor" /> {college.rating || 4.0}/5</span>
+                  {college.established && <span className="flex items-center gap-1"><Building2 size={13} /> Est. {college.established}</span>}
+                  {courses.length > 0 && <span className="flex items-center gap-1"><BookOpen size={13} /> {courses.length} Courses</span>}
+                </div>
+                {college.updatedAt && (
+                  <p className="text-[10px] text-white/50 mt-2">Last updated: {new Date(college.updatedAt).toLocaleDateString()}</p>
                 )}
               </div>
+            </div>
+
+            {/* ── Sticky Action Bar ── */}
+            <div className="sticky top-0 z-30 bg-white/95 backdrop-blur-md rounded-xl shadow-sm border border-gray-100 px-3 py-2.5 flex items-center gap-2 overflow-x-auto">
+              <Link href={`/apply?college=${encodeURIComponent(college.name)}`}
+                className="flex items-center gap-1.5 bg-green-600 text-white px-4 py-2 rounded-lg text-xs font-bold hover:bg-green-700 transition shrink-0">
+                <GraduationCap size={13} /> Apply Now
+              </Link>
+              {college.brochureUrl && (
+                <a href={college.brochureUrl} target="_blank" rel="noopener noreferrer"
+                  className="flex items-center gap-1.5 bg-purple-50 text-purple-700 border border-purple-200 px-3 py-2 rounded-lg text-xs font-medium hover:bg-purple-100 transition shrink-0">
+                  <Download size={13} /> Brochure
+                </a>
+              )}
+              <a href={`https://wa.me/919876543210?text=Hi, I'm interested in ${encodeURIComponent(college.name)}`} target="_blank"
+                className="flex items-center gap-1.5 bg-green-50 text-green-700 border border-green-200 px-3 py-2 rounded-lg text-xs font-medium hover:bg-green-100 transition shrink-0">
+                💬 WhatsApp
+              </a>
+              <Link href={`/compare?colleges=${college._id}`}
+                className="flex items-center gap-1.5 bg-gray-50 text-gray-600 border border-gray-200 px-3 py-2 rounded-lg text-xs font-medium hover:bg-gray-100 transition shrink-0">
+                ⚖️ Compare
+              </Link>
+              {college.website && (
+                <a href={college.website} target="_blank" rel="noopener noreferrer"
+                  className="flex items-center gap-1.5 text-gray-500 border border-gray-200 px-3 py-2 rounded-lg text-xs font-medium hover:bg-gray-50 transition shrink-0 ml-auto">
+                  <ExternalLink size={12} /> Website
+                </a>
+              )}
             </div>
 
             {/* ── Tab Navigation ── */}
@@ -190,53 +248,132 @@ export default function CollegeDetailPage() {
                   </div>
                 )}
 
-                {/* COURSES TAB */}
+                {/* COURSES TAB — with search + filter */}
                 {activeTab === 'courses' && (
-                  <div className="space-y-3">
-                    {courses.length > 0 ? courses.map((c: any) => (
-                      <Link key={c._id} href={`/course/${c._id}`}
-                        className="flex items-center gap-3 bg-gray-50 hover:bg-green-50 border border-gray-200 hover:border-green-400 rounded-xl p-4 transition group">
-                        <span className="text-2xl shrink-0">{c.icon || '📚'}</span>
-                        <div className="flex-1 min-w-0">
-                          <h3 className="font-bold text-gray-800 group-hover:text-green-600 text-sm">{c.name}</h3>
-                          <div className="flex items-center gap-2 mt-1 flex-wrap">
-                            {c.courseType && <span className={`text-xs font-bold px-1.5 py-0.5 rounded ${c.courseType === 'UG' ? 'bg-purple-100 text-purple-700' : 'bg-indigo-100 text-indigo-700'}`}>{c.courseType}</span>}
-                            {c.duration && <span className="text-xs text-gray-500">{c.duration}</span>}
-                          </div>
-                        </div>
-                        <ChevronRight size={16} className="text-gray-400 group-hover:text-green-500 shrink-0" />
-                      </Link>
-                    )) : <p className="text-gray-400 text-center py-8">No courses listed yet</p>}
-                  </div>
-                )}
-
-                {/* FEES TAB */}
-                {activeTab === 'fees' && (
                   <div className="space-y-4">
-                    {fees.length > 0 ? (
-                      <div className="overflow-x-auto">
+                    {courses.length > 0 ? (<>
+                      {/* Search + Filter Bar */}
+                      <div className="flex flex-col sm:flex-row gap-2">
+                        <input placeholder="Search courses..." value={courseSearch} onChange={e => setCourseSearch(e.target.value)}
+                          className="flex-1 border border-gray-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-green-400" />
+                        <div className="flex gap-1">
+                          {['all', 'UG', 'PG', 'Diploma'].map(t => (
+                            <button key={t} onClick={() => setCourseTypeFilter(t)}
+                              className={`px-3 py-2 rounded-lg text-xs font-bold transition ${courseTypeFilter === t ? 'bg-green-600 text-white' : 'bg-gray-100 text-gray-600 hover:bg-gray-200'}`}>
+                              {t === 'all' ? 'All' : t}
+                            </button>
+                          ))}
+                        </div>
+                      </div>
+
+                      {/* Course Table */}
+                      <div className="overflow-x-auto rounded-xl border border-gray-200">
                         <table className="w-full text-sm">
                           <thead>
-                            <tr className="bg-gray-50 text-gray-600 text-xs uppercase">
-                              <th className="px-3 py-2 text-left">Course</th>
-                              <th className="px-3 py-2 text-left">Category</th>
-                              <th className="px-3 py-2 text-left">Total Fee</th>
-                              <th className="px-3 py-2 text-left">Booking</th>
+                            <tr className="bg-gray-50 text-gray-600 text-xs uppercase border-b border-gray-200">
+                              <th className="px-3 py-2.5 text-left">Course</th>
+                              <th className="px-3 py-2.5 text-left">Type</th>
+                              <th className="px-3 py-2.5 text-left">Duration</th>
+                              <th className="px-3 py-2.5 text-left">Stream</th>
+                              <th className="px-3 py-2.5 text-left w-10"></th>
                             </tr>
                           </thead>
                           <tbody className="divide-y divide-gray-100">
-                            {fees.map((f: any) => (
-                              <tr key={f._id} className="hover:bg-gray-50">
-                                <td className="px-3 py-2 font-medium text-gray-800">{f.courseName || '—'}</td>
-                                <td className="px-3 py-2">{f.admissionCategoryName ? <span className="text-xs bg-purple-100 text-purple-700 px-2 py-0.5 rounded-full font-bold">{f.admissionCategoryName}</span> : '—'}</td>
-                                <td className="px-3 py-2 text-green-600 font-bold">{f.totalFee || '—'}</td>
-                                <td className="px-3 py-2 text-gray-600">{f.bookingAmount || '—'}</td>
+                            {courses
+                              .filter((c: any) => {
+                                const matchSearch = !courseSearch || c.name?.toLowerCase().includes(courseSearch.toLowerCase());
+                                const matchType = courseTypeFilter === 'all' || c.courseType === courseTypeFilter;
+                                return matchSearch && matchType;
+                              })
+                              .map((c: any) => (
+                              <tr key={c._id} className="hover:bg-green-50/50 transition">
+                                <td className="px-3 py-3">
+                                  <Link href={`/course/${c._id}`} className="font-medium text-gray-800 hover:text-green-600 transition">
+                                    {c.icon || '📚'} {c.name}
+                                  </Link>
+                                  {c.specialization && <p className="text-xs text-gray-400 mt-0.5">{c.specialization}</p>}
+                                </td>
+                                <td className="px-3 py-3">
+                                  {c.courseType && <span className={`text-xs font-bold px-2 py-0.5 rounded-full ${c.courseType === 'UG' ? 'bg-purple-100 text-purple-700' : c.courseType === 'PG' ? 'bg-indigo-100 text-indigo-700' : 'bg-gray-100 text-gray-600'}`}>{c.courseType}</span>}
+                                </td>
+                                <td className="px-3 py-3 text-gray-600 text-xs">{c.duration || '—'}</td>
+                                <td className="px-3 py-3 text-gray-500 text-xs">{c.mainCategory || c.stream || '—'}</td>
+                                <td className="px-3 py-3">
+                                  <Link href={`/course/${c._id}`} className="text-green-600 hover:text-green-700"><ChevronRight size={14} /></Link>
+                                </td>
                               </tr>
                             ))}
                           </tbody>
                         </table>
                       </div>
-                    ) : college.fees ? (
+                      <p className="text-xs text-gray-400 text-right">
+                        Showing {courses.filter((c: any) => {
+                          const matchSearch = !courseSearch || c.name?.toLowerCase().includes(courseSearch.toLowerCase());
+                          const matchType = courseTypeFilter === 'all' || c.courseType === courseTypeFilter;
+                          return matchSearch && matchType;
+                        }).length} of {courses.length} courses
+                      </p>
+                    </>) : <p className="text-gray-400 text-center py-8">No courses listed yet</p>}
+                  </div>
+                )}
+
+                {/* FEES TAB — enhanced */}
+                {activeTab === 'fees' && (
+                  <div className="space-y-4">
+                    {fees.length > 0 ? (<>
+                      <div className="overflow-x-auto rounded-xl border border-gray-200">
+                        <table className="w-full text-sm">
+                          <thead>
+                            <tr className="bg-gray-50 text-gray-600 text-xs uppercase border-b border-gray-200">
+                              <th className="px-3 py-2.5 text-left">Course</th>
+                              <th className="px-3 py-2.5 text-left">Category</th>
+                              <th className="px-3 py-2.5 text-left">Total Fee</th>
+                              <th className="px-3 py-2.5 text-left">Booking</th>
+                              <th className="px-3 py-2.5 text-left">Details</th>
+                            </tr>
+                          </thead>
+                          <tbody className="divide-y divide-gray-100">
+                            {fees.map((f: any) => (
+                              <tr key={f._id} className="hover:bg-gray-50">
+                                <td className="px-3 py-3 font-medium text-gray-800">{f.courseName || '—'}</td>
+                                <td className="px-3 py-3">{f.admissionCategoryName ? <span className="text-xs bg-purple-100 text-purple-700 px-2 py-0.5 rounded-full font-bold">{f.admissionCategoryName}</span> : '—'}</td>
+                                <td className="px-3 py-3 text-green-600 font-bold whitespace-nowrap">{f.totalFee || '—'}</td>
+                                <td className="px-3 py-3 text-gray-600">{f.bookingAmount || '—'}</td>
+                                <td className="px-3 py-3">
+                                  <div className="flex flex-wrap gap-1">
+                                    {f.scholarshipAvailable && <span className="text-[10px] bg-amber-100 text-amber-700 px-1.5 py-0.5 rounded font-bold">🎓 Scholarship</span>}
+                                    {f.loanAvailable && <span className="text-[10px] bg-blue-100 text-blue-700 px-1.5 py-0.5 rounded font-bold">🏦 Loan</span>}
+                                    {f.yearWiseFees?.length > 0 && <span className="text-[10px] bg-gray-100 text-gray-600 px-1.5 py-0.5 rounded">📅 {f.yearWiseFees.length}yr</span>}
+                                  </div>
+                                </td>
+                              </tr>
+                            ))}
+                          </tbody>
+                        </table>
+                      </div>
+
+                      {/* Year-wise breakdown */}
+                      {fees.some((f: any) => f.yearWiseFees?.length > 0) && (
+                        <details className="bg-blue-50 border border-blue-200 rounded-xl p-4">
+                          <summary className="font-bold text-blue-800 text-sm cursor-pointer">📅 Year-Wise Fee Breakdown</summary>
+                          <div className="mt-3 space-y-3">
+                            {fees.filter((f: any) => f.yearWiseFees?.length > 0).map((f: any) => (
+                              <div key={f._id}>
+                                <p className="text-xs font-bold text-gray-700 mb-1">{f.courseName} {f.admissionCategoryName ? `(${f.admissionCategoryName})` : ''}</p>
+                                <div className="grid grid-cols-2 sm:grid-cols-4 gap-2">
+                                  {f.yearWiseFees.map((y: any, i: number) => (
+                                    <div key={i} className="bg-white rounded-lg px-3 py-2 border border-blue-100 text-center">
+                                      <span className="text-xs text-gray-500 block">{y.label}</span>
+                                      <span className="text-sm font-bold text-blue-700">{y.amount}</span>
+                                    </div>
+                                  ))}
+                                </div>
+                              </div>
+                            ))}
+                          </div>
+                        </details>
+                      )}
+                    </>) : college.fees ? (
                       <div className="bg-gradient-to-r from-green-50 to-emerald-50 border border-green-200 rounded-xl p-5">
                         <p className="text-2xl font-extrabold text-green-600">{college.fees}</p>
                         <p className="text-gray-500 text-sm mt-1">Starting fees (approx)</p>
@@ -388,6 +525,24 @@ export default function CollegeDetailPage() {
       )}
 
       <Footer />
+
+      {/* Mobile Sticky CTA */}
+      <div className="fixed bottom-0 left-0 right-0 z-40 lg:hidden bg-white/95 backdrop-blur-md border-t border-gray-200 px-4 py-3 flex items-center gap-2" style={{ paddingBottom: 'env(safe-area-inset-bottom, 12px)' }}>
+        <Link href={`/apply?college=${encodeURIComponent(college.name)}`}
+          className="flex-1 bg-green-600 text-white text-center py-2.5 rounded-xl text-sm font-bold hover:bg-green-700 transition">
+          Apply Now
+        </Link>
+        <a href={`https://wa.me/919876543210?text=Hi, I'm interested in ${encodeURIComponent(college.name)}`} target="_blank"
+          className="bg-green-50 text-green-700 border border-green-200 px-4 py-2.5 rounded-xl text-sm font-bold hover:bg-green-100 transition">
+          💬
+        </a>
+        {college.phoneNumber && (
+          <a href={`tel:${college.phoneNumber}`}
+            className="bg-blue-50 text-blue-700 border border-blue-200 px-4 py-2.5 rounded-xl text-sm font-bold hover:bg-blue-100 transition">
+            📞
+          </a>
+        )}
+      </div>
     </div>
   );
 }
