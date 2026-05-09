@@ -1,7 +1,7 @@
 import type { NextConfig } from 'next';
 
 const nextConfig: NextConfig = {
-  serverExternalPackages: ['mongoose', 'tesseract.js', 'sharp'],
+  serverExternalPackages: ['mongoose', 'tesseract.js', 'sharp', 'pdf-parse', 'xlsx'],
   // Increase body size limit for file uploads (50MB)
   experimental: {
     serverActions: {

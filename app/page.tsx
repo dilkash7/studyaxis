@@ -3,7 +3,6 @@ import Footer from '@/components/frontend/Footer';
 import HeroSection from '@/components/frontend/HeroSection';
 import ServicesSection from '@/components/frontend/ServicesSection';
 import WhatsAppButton from '@/components/frontend/WhatsAppButton';
-import FAQChatbot from '@/components/frontend/FAQChatbot';
 import CounsellingBot from '@/components/frontend/CounsellingBot';
 import InquiryForm from '@/components/frontend/InquiryForm';
 import Link from 'next/link';
@@ -82,7 +81,6 @@ export default function Home() {
       <Footer />
       <WhatsAppButton />
       <CounsellingBot />
-      <FAQChatbot />
     </div>
   );
 }

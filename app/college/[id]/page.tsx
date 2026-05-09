@@ -6,9 +6,6 @@ import Link from 'next/link';
 import Navbar from '@/components/frontend/Navbar';
 import Footer from '@/components/frontend/Footer';
 import InquiryForm from '@/components/frontend/InquiryForm';
-import WhatsAppButton from '@/components/frontend/WhatsAppButton';
-import FAQChatbot from '@/components/frontend/FAQChatbot';
-import CounsellingBot from '@/components/frontend/CounsellingBot';
 import Loader from '@/components/ui/Loader';
 import {
   MapPin, Star, Building2, BookOpen, ChevronRight, FileText,
@@ -391,9 +388,6 @@ export default function CollegeDetailPage() {
       )}
 
       <Footer />
-      <WhatsAppButton />
-      <CounsellingBot />
-      <FAQChatbot />
     </div>
   );
 }

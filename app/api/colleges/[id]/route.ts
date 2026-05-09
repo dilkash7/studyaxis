@@ -3,12 +3,22 @@ import { connectDB } from '@/lib/mongodb';
 import College from '@/models/College';
 import { requireAuth } from '@/lib/auth';
 import { logAdminAction } from '@/lib/adminLog';
+import mongoose from 'mongoose';
 
 export async function GET(_: NextRequest, { params }: { params: Promise<{ id: string }> }) {
   try {
     const { id } = await params;
     await connectDB();
-    const college = await College.findById(id).lean();
+
+    // Support both ObjectId and slug-based lookups
+    let college;
+    if (mongoose.Types.ObjectId.isValid(id)) {
+      college = await College.findById(id).lean();
+    }
+    // If not found by ID, try slug
+    if (!college) {
+      college = await College.findOne({ slug: id }).lean();
+    }
     if (!college) return NextResponse.json({ error: 'Not found' }, { status: 404 });
     return NextResponse.json(college);
   } catch (err) {

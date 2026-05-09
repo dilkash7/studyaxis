@@ -5,7 +5,6 @@ import Navbar from '@/components/frontend/Navbar';
 import Footer from '@/components/frontend/Footer';
 import CollegeCard from '@/components/frontend/CollegeCard';
 import WhatsAppButton from '@/components/frontend/WhatsAppButton';
-import FAQChatbot from '@/components/frontend/FAQChatbot';
 import CounsellingBot from '@/components/frontend/CounsellingBot';
 import Loader from '@/components/ui/Loader';
 import { Search, SlidersHorizontal } from 'lucide-react';
@@ -132,7 +131,6 @@ export default function AbroadPage() {
       <Footer />
       <WhatsAppButton />
       <CounsellingBot />
-      <FAQChatbot />
     </div>
   );
 }

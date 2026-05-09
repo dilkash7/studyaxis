@@ -3,7 +3,6 @@
 import Navbar from '@/components/frontend/Navbar';
 import Footer from '@/components/frontend/Footer';
 import WhatsAppButton from '@/components/frontend/WhatsAppButton';
-import FAQChatbot from '@/components/frontend/FAQChatbot';
 import CounsellingBot from '@/components/frontend/CounsellingBot';
 import SmartCollegeFinder from '@/components/frontend/SmartCollegeFinder';
 
@@ -28,7 +27,6 @@ export default function CollegeFinderPage() {
       <Footer />
       <WhatsAppButton />
       <CounsellingBot />
-      <FAQChatbot />
     </div>
   );
 }
