@@ -118,6 +118,8 @@ export default function Navbar() {
             { href: '/career-guidance', label: '💼 Career Guidance' },
             { href: '/blog', label: '📰 Blog & News' },
             { href: '/callback', label: '📞 Request Callback' },
+            { href: '/search', label: '🔍 Advanced Search' },
+            { href: '/student-portal', label: '🎓 Student Portal' },
             { href: '/compare', label: '⚖️ Compare Colleges' },
             { href: '/saved', label: '❤️ Saved Colleges' },
             { href: '/admin/login', label: 'Admin Login' },
