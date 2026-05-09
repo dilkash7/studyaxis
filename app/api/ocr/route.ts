@@ -10,6 +10,7 @@ import { scoreField, scoreScan } from '@/lib/ocr/confidence';
 import { isPDF, parsePDF } from '@/lib/ocr/pdfParser';
 import { parseExcel, excelToCourseImport, isExcel, isCSV } from '@/lib/ocr/excelParser';
 import { detectTable, mergeTableWithCourses } from '@/lib/ocr/tableDetector';
+import { visionOCR, isVisionAvailable } from '@/lib/ocr/visionOCR';
 
 /**
  * Document Intelligence Pipeline API
@@ -68,10 +69,20 @@ export async function POST(req: NextRequest) {
       return processPDF(fileBuffer, startTime, user);
     }
 
-    // Image → OCR
+    // Image → Google Vision (primary) or Tesseract (fallback)
     const imageTypes = ['image/jpeg', 'image/png', 'image/webp', 'image/bmp', 'image/tiff'];
     const imageExts = ['jpg', 'jpeg', 'png', 'webp', 'bmp', 'tiff', 'tif'];
     if (imageTypes.includes(fileType) || imageExts.includes(ext)) {
+      // Try Google Vision first (much better for tables/scanned docs)
+      if (isVisionAvailable()) {
+        try {
+          const visionResult = await visionOCR(fileBuffer);
+          return processOCRText(visionResult.text, visionResult.confidence, 'google-vision', startTime, user);
+        } catch (visionErr: any) {
+          console.warn('Vision OCR failed, falling back to Tesseract:', visionErr.message);
+        }
+      }
+      // Fallback to Tesseract
       const ocrResult = await extractTextFromBuffer(fileBuffer);
       return processOCRText(ocrResult.text, ocrResult.confidence, 'tesseract.js', startTime, user);
     }
