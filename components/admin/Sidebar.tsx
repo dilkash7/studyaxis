@@ -9,6 +9,7 @@ import {
   Building2, Image, FileText, Tags, GraduationCap,
   ChevronLeft, ChevronRight, Menu, Sparkles,
   Bell, Newspaper, HelpCircle, Award, MessageCircle,
+  ClipboardList,
 } from 'lucide-react';
 import axios from 'axios';
 import { useRouter } from 'next/navigation';
@@ -28,6 +29,7 @@ const allLinks = [
   { href: '/admin/media', label: 'Media', icon: Image, permission: 'media' },
   { href: '/admin/brochures', label: 'Brochures', icon: FileText, permission: 'brochures' },
   { href: '/admin/leads', label: 'CRM / Leads', icon: Users, permission: 'leads' },
+  { href: '/admin/applications', label: 'Applications', icon: ClipboardList, permission: null },
   { href: '/admin/locations', label: 'Locations', icon: MapPin, permission: 'locations' },
   { href: '/admin/services', label: 'Services', icon: Star, permission: null },
   { href: '/admin/chatbot', label: 'Chatbot Q&A', icon: MessageSquare, permission: 'chatbot' },
