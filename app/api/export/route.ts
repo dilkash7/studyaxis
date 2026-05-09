@@ -1,31 +1,51 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { connectDB } from '@/lib/mongodb';
-import Lead from '@/models/Lead';
 import { requireAuth } from '@/lib/auth';
+import { toCSV } from '@/lib/export';
+
+// Dynamic model imports
+const modelMap: Record<string, () => Promise<any>> = {
+  colleges: () => import('@/models/College').then(m => m.default),
+  courses: () => import('@/models/Course').then(m => m.default),
+  leads: () => import('@/models/Lead').then(m => m.default),
+  applications: () => import('@/models/Application').then(m => m.default),
+  notices: () => import('@/models/Notice').then(m => m.default),
+  blogs: () => import('@/models/Blog').then(m => m.default),
+  faqs: () => import('@/models/FAQ').then(m => m.default),
+  reviews: () => import('@/models/Review').then(m => m.default),
+  scholarships: () => import('@/models/Scholarship').then(m => m.default),
+  events: () => import('@/models/Event').then(m => m.default),
+  placements: () => import('@/models/Placement').then(m => m.default),
+  alumni: () => import('@/models/Alumni').then(m => m.default),
+  faculty: () => import('@/models/Faculty').then(m => m.default),
+  inquiries: () => import('@/models/Inquiry').then(m => m.default),
+};
 
 export async function GET(req: NextRequest) {
-  try {
-    const user = requireAuth(req);
-    if (!user) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+  const user = requireAuth(req);
+  if (!user) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+  await connectDB();
 
-    await connectDB();
-    const leads = await Lead.find().sort({ createdAt: -1 }).lean();
+  const { searchParams } = new URL(req.url);
+  const module = searchParams.get('module');
+  const format = searchParams.get('format') || 'json';
 
-    const headers = ['Name', 'Phone', 'Email', 'Course', 'Location', 'College', 'Status', 'Notes', 'Date'];
-    const rows = leads.map((l: any) => [
-      l.name, l.phone, l.email, l.course, l.location, l.college, l.status, l.notes,
-      new Date(l.createdAt).toLocaleDateString()
-    ]);
+  if (!module || !modelMap[module]) {
+    return NextResponse.json({ error: 'Invalid module', available: Object.keys(modelMap) }, { status: 400 });
+  }
 
-    const csv = [headers, ...rows].map(r => r.map((c: any) => `"${c || ''}"`).join(',')).join('\n');
+  const Model = await modelMap[module]();
+  const data = await Model.find().lean();
 
+  if (format === 'csv') {
+    const csv = toCSV(data);
     return new NextResponse(csv, {
       headers: {
         'Content-Type': 'text/csv',
-        'Content-Disposition': 'attachment; filename=leads.csv',
+        'Content-Disposition': `attachment; filename="${module}_export.csv"`,
       },
     });
-  } catch (err) {
-    return NextResponse.json({ error: 'Server error' }, { status: 500 });
   }
+
+  return NextResponse.json(data);
 }

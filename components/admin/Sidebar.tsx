@@ -38,6 +38,7 @@ const allLinks = [
   { href: '/admin/faqs', label: 'FAQ', icon: HelpCircle, permission: null },
   { href: '/admin/reviews', label: 'Reviews', icon: MessageCircle, permission: null },
   { href: '/admin/scholarships', label: 'Scholarships', icon: Award, permission: null },
+  { href: '/admin/testimonials', label: 'Testimonials', icon: Star, permission: null },
   { href: '/admin/quickadd', label: 'Quick Add', icon: Zap, permission: null },
   { href: '/admin/ocr', label: 'AI Scanner', icon: Sparkles, permission: null },
   { href: '/admin/student-records', label: 'Students', icon: GraduationCap, permission: 'studentRecords', superadminOnly: true },
