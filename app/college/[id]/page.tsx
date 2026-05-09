@@ -10,7 +10,7 @@ import Loader from '@/components/ui/Loader';
 import {
   MapPin, Star, Building2, BookOpen, ChevronRight, FileText,
   Download, Camera, DollarSign, GraduationCap, Home, ClipboardList,
-  Award, HelpCircle, ChevronDown, ExternalLink, Shield,
+  Award, HelpCircle, ChevronDown, ExternalLink, Shield, MessageSquare,
 } from 'lucide-react';
 
 const TAB_CONFIG = [
@@ -22,6 +22,8 @@ const TAB_CONFIG = [
   { id: 'hostel', label: 'Hostel', icon: Home },
   { id: 'gallery', label: 'Gallery', icon: Camera },
   { id: 'documents', label: 'Documents', icon: FileText },
+  { id: 'reviews', label: 'Reviews', icon: MessageSquare },
+  { id: 'scholarships', label: 'Scholarships', icon: Award },
   { id: 'faq', label: 'FAQ', icon: HelpCircle },
 ];
 
@@ -58,6 +60,8 @@ export default function CollegeDetailPage() {
   const [media, setMedia] = useState<any[]>([]);
   const [brochures, setBrochures] = useState<any[]>([]);
   const [campuses, setCampuses] = useState<any[]>([]);
+  const [reviews, setReviews] = useState<any[]>([]);
+  const [scholarships, setScholarships] = useState<any[]>([]);
   const [detail, setDetail] = useState<any>(null);
   const [loading, setLoading] = useState(true);
   const [activeTab, setActiveTab] = useState('overview');
@@ -73,13 +77,15 @@ export default function CollegeDetailPage() {
       setCollege(collegeData);
       // Step 2: Use the real ObjectId for all sub-API calls
       const realId = collegeData._id;
-      const [co, f, m, b, ca, d] = await Promise.all([
+      const [co, f, m, b, ca, d, rv, sc] = await Promise.all([
         axios.get(`/api/courses?collegeId=${realId}`),
         axios.get(`/api/fees?collegeId=${realId}`).catch(() => ({ data: [] })),
         axios.get(`/api/media?collegeId=${realId}`),
         axios.get(`/api/brochures?collegeId=${realId}`),
         axios.get(`/api/campuses?collegeId=${realId}`),
         axios.get(`/api/college-details/${realId}`).catch(() => ({ data: { sections: [], faqs: [] } })),
+        axios.get(`/api/reviews?collegeId=${realId}`).catch(() => ({ data: [] })),
+        axios.get(`/api/scholarships?collegeId=${realId}`).catch(() => ({ data: [] })),
       ]);
       setCourses(co.data || []);
       setFees(Array.isArray(f.data) ? f.data : []);
@@ -87,6 +93,8 @@ export default function CollegeDetailPage() {
       setBrochures(b.data?.data || []);
       setCampuses(ca.data?.data || []);
       setDetail(d.data);
+      setReviews(Array.isArray(rv.data) ? rv.data : rv.data?.data || []);
+      setScholarships(Array.isArray(sc.data) ? sc.data : sc.data?.data || []);
       setLoading(false);
     }).catch(() => setLoading(false));
   }, [id]);
@@ -555,6 +563,69 @@ export default function CollegeDetailPage() {
                         )}
                       </div>
                     )) : <p className="text-gray-400 text-center py-8">No FAQs available yet</p>}
+                  </div>
+                )}
+
+                {/* REVIEWS TAB */}
+                {activeTab === 'reviews' && (
+                  <div className="space-y-4">
+                    {reviews.length > 0 ? reviews.filter((r: any) => r.approved !== false).map((r: any) => (
+                      <div key={r._id} className="bg-gray-50 rounded-xl p-4 border border-gray-100">
+                        <div className="flex items-start justify-between gap-3">
+                          <div className="flex-1">
+                            <div className="flex items-center gap-2 mb-1">
+                              <span className="font-bold text-gray-800 text-sm">{r.name || 'Student'}</span>
+                              {r.verified && <span className="text-[10px] bg-green-100 text-green-700 px-1.5 py-0.5 rounded-full font-bold">✅ Verified</span>}
+                            </div>
+                            {r.course && <p className="text-xs text-gray-400 mb-2">{r.course} {r.year ? `• ${r.year}` : ''}</p>}
+                            {r.rating && (
+                              <div className="flex items-center gap-0.5 mb-2">
+                                {[...Array(5)].map((_, i) => (
+                                  <Star key={i} size={12} className={i < r.rating ? 'text-yellow-400' : 'text-gray-200'} fill={i < r.rating ? 'currentColor' : 'none'} />
+                                ))}
+                                <span className="text-xs text-gray-500 ml-1">{r.rating}/5</span>
+                              </div>
+                            )}
+                            <p className="text-sm text-gray-600">{r.content || r.review || r.message}</p>
+                          </div>
+                        </div>
+                        <p className="text-[10px] text-gray-400 mt-2">{new Date(r.createdAt).toLocaleDateString()}</p>
+                      </div>
+                    )) : (
+                      <div className="text-center py-8">
+                        <MessageSquare size={32} className="mx-auto text-gray-200 mb-2" />
+                        <p className="text-gray-400">No reviews yet</p>
+                      </div>
+                    )}
+                  </div>
+                )}
+
+                {/* SCHOLARSHIPS TAB */}
+                {activeTab === 'scholarships' && (
+                  <div className="space-y-3">
+                    {scholarships.length > 0 ? scholarships.map((s: any) => (
+                      <div key={s._id} className="bg-amber-50/50 border border-amber-100 rounded-xl p-4 hover:shadow-sm transition">
+                        <div className="flex items-start justify-between gap-3">
+                          <div className="flex-1">
+                            <h4 className="font-bold text-gray-800 text-sm">{s.name}</h4>
+                            {s.provider && <p className="text-xs text-green-600 font-medium">{s.provider}</p>}
+                            {s.description && <p className="text-sm text-gray-500 mt-1 line-clamp-2">{s.description}</p>}
+                            <div className="flex flex-wrap gap-1.5 mt-2">
+                              {s.amount && <span className="text-xs bg-green-100 text-green-700 px-2 py-0.5 rounded-full font-bold">₹ {s.amount}</span>}
+                              {s.type && <span className="text-xs bg-blue-100 text-blue-700 px-2 py-0.5 rounded-full">{s.type}</span>}
+                              {s.deadline && <span className="text-xs bg-red-50 text-red-600 px-2 py-0.5 rounded-full">⏰ {new Date(s.deadline).toLocaleDateString()}</span>}
+                            </div>
+                          </div>
+                          <Award size={24} className="text-amber-300 shrink-0" />
+                        </div>
+                      </div>
+                    )) : (
+                      <div className="text-center py-8">
+                        <Award size={32} className="mx-auto text-gray-200 mb-2" />
+                        <p className="text-gray-400">No scholarships listed for this college</p>
+                        <a href="/scholarships" className="text-sm text-green-600 hover:underline mt-1 inline-block">Browse all scholarships →</a>
+                      </div>
+                    )}
                   </div>
                 )}
               </div>
