@@ -3,6 +3,7 @@ import { useEffect, useState } from 'react';
 import { useParams, useRouter } from 'next/navigation';
 import axios from 'axios';
 import Link from 'next/link';
+import Image from 'next/image';
 import Navbar from '@/components/frontend/Navbar';
 import Footer from '@/components/frontend/Footer';
 import InquiryForm from '@/components/frontend/InquiryForm';
@@ -206,7 +207,7 @@ export default function CollegeDetailPage() {
             <div className="relative w-full rounded-2xl overflow-hidden shadow-lg">
               <div className="h-56 sm:h-72 bg-gradient-to-br from-green-600 to-green-800">
                 {college.image ? (
-                  <img src={college.image} alt={college.name} className="w-full h-full object-cover opacity-80" />
+                  <Image src={college.image} alt={college.name} fill sizes="(max-width: 768px) 100vw, (max-width: 1200px) 66vw, 50vw" className="object-cover opacity-80" />
                 ) : (
                   <div className="w-full h-full flex items-center justify-center text-7xl opacity-50">🏫</div>
                 )}
@@ -443,7 +444,9 @@ export default function CollegeDetailPage() {
                       <div>
                         <h3 className="font-bold text-gray-800 mb-2">📄 Fee Structure Poster</h3>
                         {fees.filter((f: any) => f.feeStructureImage).map((f: any) => (
-                          <img key={f._id} src={f.feeStructureImage} alt="Fee Structure" className="rounded-xl border max-w-full cursor-pointer hover:opacity-90" onClick={() => setLightbox(f.feeStructureImage)} />
+                          <div key={f._id} className="relative w-full max-w-2xl aspect-auto">
+                            <Image src={f.feeStructureImage} alt="Fee Structure" width={800} height={600} className="rounded-xl border max-w-full cursor-pointer hover:opacity-90 object-contain" onClick={() => setLightbox(f.feeStructureImage)} />
+                          </div>
                         ))}
                       </div>
                     )}
@@ -513,8 +516,8 @@ export default function CollegeDetailPage() {
                         {media.map((item: any) => (
                           <div key={item._id} className="break-inside-avoid group cursor-pointer"
                             onClick={() => setLightbox(item.mediaUrl)}>
-                            <div className="relative rounded-xl overflow-hidden bg-gray-100">
-                              <img src={item.mediaUrl} alt={item.title} className="w-full object-cover group-hover:scale-105 transition duration-300" />
+                            <div className="relative rounded-xl overflow-hidden bg-gray-100 aspect-video">
+                              <Image src={item.mediaUrl} alt={item.title} fill sizes="(max-width: 768px) 50vw, 33vw" className="object-cover group-hover:scale-105 transition duration-300" />
                               <div className="absolute inset-0 bg-black/0 group-hover:bg-black/40 transition flex items-end">
                                 <div className="p-2 opacity-0 group-hover:opacity-100 transition">
                                   <p className="text-white text-xs font-medium">{item.title}</p>
@@ -641,9 +644,11 @@ export default function CollegeDetailPage() {
 
       {/* Lightbox */}
       {lightbox && (
-        <div className="fixed inset-0 z-50 bg-black/80 flex items-center justify-center p-4"
+        <div className="fixed inset-0 z-[60] bg-black/90 flex items-center justify-center p-4 backdrop-blur-sm"
           onClick={() => setLightbox(null)}>
-          <img src={lightbox} alt="Preview" className="max-w-full max-h-[90vh] rounded-2xl object-contain" />
+          <div className="relative w-full max-w-5xl h-full max-h-[90vh]">
+            <Image src={lightbox} alt="Preview" fill className="object-contain" />
+          </div>
         </div>
       )}
 

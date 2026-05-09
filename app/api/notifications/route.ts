@@ -11,6 +11,7 @@ export async function GET(req: NextRequest) {
 
     // Get latest 10 leads as notifications
     const leads = await Lead.find()
+      .select('name course createdAt phone source')
       .sort({ createdAt: -1 })
       .limit(10)
       .lean();

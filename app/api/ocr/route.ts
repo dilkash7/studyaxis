@@ -283,3 +283,6 @@ async function processOCRText(rawText: string, ocrConfidence: number, engine: st
     processingTimeMs: Date.now() - startTime,
   });
 }
+
+// Route segment config to increase body size limit and execution time
+export const maxDuration = 60; // 1 minute timeout for large OCR workloads

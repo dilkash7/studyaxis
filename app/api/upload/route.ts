@@ -187,8 +187,5 @@ export async function POST(req: NextRequest) {
 }
 
 // Increase Next.js route segment body size limit
-export const config = {
-  api: {
-    bodyParser: false,
-  },
-};
+// Route segment config to increase body size limit
+export const maxDuration = 60; // 1 minute timeout for large uploads
