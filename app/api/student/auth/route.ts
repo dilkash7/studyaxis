@@ -42,7 +42,13 @@ export async function POST(req: NextRequest) {
       const token = signToken({ id: user._id, role: 'student', sessionToken });
       
       const res = NextResponse.json({ success: true, token, user: { id: user._id, name, email } });
-      res.cookies.set('studentToken', token, { httpOnly: true, maxAge: 60 * 60 * 24 * 7, path: '/' });
+      res.cookies.set('studentToken', token, {
+        httpOnly: true,
+        secure: process.env.NODE_ENV === 'production',
+        sameSite: 'lax',
+        maxAge: 60 * 60 * 24 * 7,
+        path: '/',
+      });
       return res;
     } 
     
@@ -61,7 +67,13 @@ export async function POST(req: NextRequest) {
       const token = signToken({ id: user._id, role: 'student', sessionToken });
 
       const res = NextResponse.json({ success: true, token, user: { id: user._id, name: user.name, email: user.email } });
-      res.cookies.set('studentToken', token, { httpOnly: true, maxAge: 60 * 60 * 24 * 7, path: '/' });
+      res.cookies.set('studentToken', token, {
+        httpOnly: true,
+        secure: process.env.NODE_ENV === 'production',
+        sameSite: 'lax',
+        maxAge: 60 * 60 * 24 * 7,
+        path: '/',
+      });
       return res;
     }
 
