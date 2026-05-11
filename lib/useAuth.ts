@@ -6,7 +6,7 @@ export function useAuth(type: 'student' | 'admin' = 'student') {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [isAuthenticated, setIsAuthenticated] = useState(false);
-  const refreshIntervalRef = useRef<NodeJS.Timeout>();
+  const refreshIntervalRef = useRef<NodeJS.Timeout | null>(null);
 
   const tokenKey = type === 'student' ? 'studentToken' : 'token';
   const meEndpoint = type === 'student' ? '/api/student/me' : '/api/auth/me';
