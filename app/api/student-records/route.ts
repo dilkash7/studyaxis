@@ -1,5 +1,9 @@
 import { connectDB } from '@/lib/mongodb';
 import StudentRecord from '@/models/StudentRecord';
+import Campus from '@/models/Campus';
+import College from '@/models/College';
+import Course from '@/models/Course';
+import AdmissionCategory from '@/models/AdmissionCategory';
 import { verifyToken, getTokenFromRequest } from '@/lib/auth';
 import { NextRequest, NextResponse } from 'next/server';
 import { logAdminAction } from '@/lib/adminLog';
