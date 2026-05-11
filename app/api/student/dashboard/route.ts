@@ -32,8 +32,9 @@ export async function GET(req: NextRequest) {
 
     user.savedColleges = savedColleges;
 
-    // Strict Session Validation: If sessionToken is null or mismatch, force logout
-    if (!user.sessionToken || user.sessionToken !== userPayload.sessionToken) {
+    // Allow multiple device sessions.
+    // Only reject if the student session was explicitly cleared by force logout.
+    if (user.sessionToken === null) {
       return NextResponse.json({ error: 'Session expired or invalidated by Admin' }, { status: 401 });
     }
 

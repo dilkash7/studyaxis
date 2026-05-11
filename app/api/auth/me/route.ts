@@ -19,8 +19,9 @@ export async function GET(req: NextRequest) {
       return NextResponse.json({ error: 'Session invalidated' }, { status: 401 });
     }
 
-    // Strict Session Token Validation for Force Logout
-    if (admin.sessionToken && userPayload.sessionToken !== admin.sessionToken) {
+    // Allow multiple device sessions.
+    // Only reject if the admin session has been explicitly cleared by force logout.
+    if (admin.sessionToken === null) {
       await logAdminAction({
         adminId: admin._id,
         adminName: admin.name,
