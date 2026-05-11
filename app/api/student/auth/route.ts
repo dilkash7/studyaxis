@@ -9,7 +9,7 @@ import { rateLimiter } from '@/lib/rateLimit';
 // Register or Login Student
 export async function POST(req: NextRequest) {
   try {
-    const rateLimitResponse = rateLimiter(req, 10);
+    const rateLimitResponse = rateLimiter(req, 50);
     if (rateLimitResponse) return rateLimitResponse;
 
     await connectDB();

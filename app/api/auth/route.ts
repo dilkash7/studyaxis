@@ -9,8 +9,8 @@ import { rateLimiter } from '@/lib/rateLimit';
 
 export async function POST(req: NextRequest) {
   try {
-    // Prevent Brute Force Login Attacks (Max 5 attempts per minute)
-    const rateLimitResponse = rateLimiter(req, 5);
+    // Prevent Brute Force Login Attacks (Max 50 attempts per minute for testing)
+    const rateLimitResponse = rateLimiter(req, 50);
     if (rateLimitResponse) return rateLimitResponse;
 
     await connectDB();

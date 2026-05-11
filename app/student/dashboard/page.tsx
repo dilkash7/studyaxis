@@ -74,9 +74,18 @@ export default function StudentDashboard() {
     }
   };
 
-  const handleLogout = () => {
-    localStorage.removeItem('studentToken');
-    router.push('/');
+  const handleLogout = async () => {
+    try {
+      const token = localStorage.getItem('studentToken');
+      if (token) {
+        await axios.post('/api/student/logout', {}, { headers: { Authorization: `Bearer ${token}` } });
+      }
+    } catch (err) {
+      console.error('Logout error:', err);
+    } finally {
+      localStorage.removeItem('studentToken');
+      router.push('/');
+    }
   };
 
   const handleSaveProfile = async (e: React.FormEvent) => {

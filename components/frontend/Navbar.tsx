@@ -197,11 +197,15 @@ export default function Navbar() {
               {l.label}
             </Link>
           ))}
-          <Link href="/admin/dashboard" onClick={() => setOpen(false)}
-            className="block py-2.5 px-3 rounded-xl text-sm font-medium text-purple-600 bg-purple-50 hover:bg-purple-100 transition">
-            Admin Dashboard
-          </Link>
-          <div className="pt-2 mt-2 border-t border-gray-100">
+          <div className="pt-2 mt-2 border-t border-gray-100 space-y-2">
+            <Link href="/student/dashboard" onClick={() => setOpen(false)}
+              className="flex items-center gap-2 py-2.5 px-3 rounded-xl text-sm font-medium text-blue-600 bg-blue-50 hover:bg-blue-100 transition w-full">
+              <User size={16} /> Student Portal
+            </Link>
+            <Link href="/admin/dashboard" onClick={() => setOpen(false)}
+              className="block py-2.5 px-3 rounded-xl text-sm font-medium text-purple-600 bg-purple-50 hover:bg-purple-100 transition">
+              Admin Dashboard
+            </Link>
             <a href={`https://wa.me/${settings.whatsapp || '919876543210'}`} target="_blank"
               className="flex items-center justify-center gap-2 bg-green-600 text-white py-3 rounded-xl font-bold text-sm hover:bg-green-700 transition w-full">
               <Phone size={14} /> WhatsApp Us

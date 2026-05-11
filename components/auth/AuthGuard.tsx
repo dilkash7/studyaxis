@@ -1,0 +1,32 @@
+'use client';
+import { ReactNode } from 'react';
+import { useRouter } from 'next/navigation';
+import { useAuth } from '@/lib/useAuth';
+
+interface AuthGuardProps {
+  children: ReactNode;
+  userType?: 'student' | 'admin';
+}
+
+export default function AuthGuard({ children, userType = 'student' }: AuthGuardProps) {
+  const router = useRouter();
+  const { isAuthenticated, loading } = useAuth(userType);
+
+  if (loading) {
+    return (
+      <div className="min-h-screen flex items-center justify-center bg-gray-50">
+        <div className="text-center">
+          <div className="inline-block animate-spin rounded-full h-12 w-12 border-b-2 border-green-600 mb-4"></div>
+          <p className="text-gray-600 font-medium">Loading...</p>
+        </div>
+      </div>
+    );
+  }
+
+  if (!isAuthenticated) {
+    router.replace(userType === 'admin' ? '/admin/login' : '/student/login');
+    return null;
+  }
+
+  return <>{children}</>;
+}

@@ -62,10 +62,10 @@ export async function GET(req: NextRequest) {
     const skip = (page - 1) * limit;
 
     const students = await StudentRecord.find(filter)
-      .populate('collegeId', 'name')
-      .populate('campusId', 'name')
-      .populate('courseId', 'name')
-      .populate('admissionCategory', 'name')
+      .populate({ path: 'collegeId', model: College, select: 'name' })
+      .populate({ path: 'campusId', model: Campus, select: 'name' })
+      .populate({ path: 'courseId', model: Course, select: 'name' })
+      .populate({ path: 'admissionCategory', model: AdmissionCategory, select: 'name' })
       .sort({ createdAt: -1 })
       .skip(skip)
       .limit(limit);
@@ -125,10 +125,10 @@ export async function POST(req: NextRequest) {
     await student.save();
 
     await student.populate([
-      { path: 'collegeId', select: 'name' },
-      { path: 'campusId', select: 'name' },
-      { path: 'courseId', select: 'name' },
-      { path: 'admissionCategory', select: 'name' },
+      { path: 'collegeId', model: College, select: 'name' },
+      { path: 'campusId', model: Campus, select: 'name' },
+      { path: 'courseId', model: Course, select: 'name' },
+      { path: 'admissionCategory', model: AdmissionCategory, select: 'name' },
     ]);
 
     await logAdminAction({ adminId: payload.id, adminName: payload.name, action: 'create', module: 'student-records', description: `Registered student: ${data.firstName} ${data.lastName}`, targetId: student._id, targetName: `${data.firstName} ${data.lastName}` });
