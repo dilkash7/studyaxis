@@ -1,7 +1,9 @@
+import mongoose from 'mongoose';
 import { NextRequest, NextResponse } from 'next/server';
 import { connectDB } from '@/lib/mongodb';
 import User from '@/models/User';
 import Application from '@/models/Application';
+import College from '@/models/College';
 import { requireAuth } from '@/lib/auth';
 
 export const dynamic = 'force-dynamic';
@@ -16,8 +18,19 @@ export async function GET(req: NextRequest) {
     await connectDB();
     
     // Fetch full user profile
-    const user = await User.findById(userPayload.id).select('-password').populate('savedColleges', 'name city state slug featured image').lean();
+    const user = await User.findById(userPayload.id).select('-password').lean();
     if (!user) return NextResponse.json({ error: 'User not found' }, { status: 404 });
+
+    // Validate saved colleges before population to avoid invalid ObjectId cast errors
+    const savedCollegeIds = Array.isArray(user.savedColleges)
+      ? user.savedColleges.filter((id: any) => mongoose.isValidObjectId(id))
+      : [];
+
+    const savedColleges = savedCollegeIds.length > 0
+      ? await College.find({ _id: { $in: savedCollegeIds } }).select('name city state slug featured image').lean()
+      : [];
+
+    user.savedColleges = savedColleges;
 
     // Strict Session Validation: If sessionToken is null or mismatch, force logout
     if (!user.sessionToken || user.sessionToken !== userPayload.sessionToken) {
@@ -60,7 +73,7 @@ export async function GET(req: NextRequest) {
     return NextResponse.json({ success: true, user, applications, studentRecords, notices, tickets });
 
   } catch (err: any) {
-    console.error('Student Dashboard API Error:', err);
+    console.error('Student Dashboard API Error:', err?.message || err, err?.stack || 'no stack');
     return NextResponse.json({ error: 'Server error' }, { status: 500 });
   }
 }
