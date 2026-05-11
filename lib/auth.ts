@@ -18,8 +18,9 @@ export function verifyToken(token: string) {
 export function getTokenFromRequest(req: NextRequest) {
   const auth = req.headers.get('authorization');
   if (auth && auth.startsWith('Bearer ')) return auth.slice(7);
-  const cookie = req.cookies.get('token');
-  return cookie?.value || null;
+  const tokenCookie = req.cookies.get('token')?.value;
+  if (tokenCookie) return tokenCookie;
+  return req.cookies.get('studentToken')?.value || null;
 }
 
 export function requireAuth(req: NextRequest) {
