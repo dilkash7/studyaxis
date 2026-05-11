@@ -39,7 +39,7 @@ function getHumanFileSize(bytes: number): string {
 export async function POST(req: NextRequest) {
   try {
     // 1. Auth check
-    const user = requireAuth(req);
+    const user = await requireAuth(req);
     if (!user) {
       return NextResponse.json(
         { error: 'Unauthorized. Please log in again.', code: 'AUTH_FAILED' },

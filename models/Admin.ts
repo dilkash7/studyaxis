@@ -41,6 +41,7 @@ const AdminSchema = new mongoose.Schema({
   
   isActive: { type: Boolean, default: true },
   lastLogin: { type: Date },
+  sessionToken: { type: String },
 }, { timestamps: true });
 
 export default mongoose.models.Admin || mongoose.model('Admin', AdminSchema);

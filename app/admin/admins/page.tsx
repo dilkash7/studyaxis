@@ -4,7 +4,7 @@ import axios from 'axios';
 import AdminLayout from '@/components/admin/AdminLayout';
 import Modal from '@/components/ui/Modal';
 import ConfirmDialog from '@/components/ui/ConfirmDialog';
-import { Plus, Trash2, Pencil, Activity, Clock, Shield, User } from 'lucide-react';
+import { Plus, Trash2, Pencil, Activity, Clock, Shield, User, LogOut } from 'lucide-react';
 
 const PERMISSIONS = ['dashboard', 'colleges', 'campuses', 'courses', 'fees', 'categories', 'media', 'brochures', 'leads', 'locations', 'chatbot', 'settings', 'studentRecords', 'admins'];
 const empty = { name: '', email: '', password: '', role: 'admin', permissions: ['dashboard', 'colleges', 'leads'] };
@@ -131,8 +131,18 @@ export default function AdminsPage() {
                   <td className="px-4 py-3 text-gray-500">{new Date(a.createdAt).toLocaleDateString()}</td>
                   <td className="px-4 py-3">
                     <div className="flex gap-2">
-                      <button onClick={() => handleEdit(a)} className="p-1 hover:bg-gray-100 rounded-lg text-gray-600"><Pencil size={15} /></button>
-                      <button onClick={() => setDeleteId(a._id)} className="p-1 hover:bg-red-50 rounded-lg text-red-500"><Trash2 size={15} /></button>
+                      <button onClick={() => handleEdit(a)} className="p-1 hover:bg-gray-100 rounded-lg text-gray-600" title="Edit"><Pencil size={15} /></button>
+                      <button onClick={async () => {
+                        if (!confirm('Forcefully log this admin out?')) return;
+                        try {
+                          await axios.post(`/api/admins/${a._id}/force-logout`, {}, { headers });
+                          alert('Admin forcefully logged out.');
+                          fetchAdmins();
+                        } catch (err: any) { alert(err.response?.data?.error || 'Failed to force logout'); }
+                      }} className="p-1 hover:bg-orange-50 rounded-lg text-orange-500" title="Force Logout">
+                        <LogOut size={15} />
+                      </button>
+                      <button onClick={() => setDeleteId(a._id)} className="p-1 hover:bg-red-50 rounded-lg text-red-500" title="Delete"><Trash2 size={15} /></button>
                     </div>
                   </td>
                 </tr>

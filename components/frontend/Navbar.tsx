@@ -1,7 +1,7 @@
 'use client';
 import { useState, useEffect, useRef } from 'react';
 import Link from 'next/link';
-import { Menu, X, Phone, Search, Heart, ChevronDown } from 'lucide-react';
+import { Menu, X, Phone, Search, Heart, ChevronDown, User } from 'lucide-react';
 import { useRouter, usePathname } from 'next/navigation';
 import axios from 'axios';
 
@@ -153,6 +153,10 @@ export default function Navbar() {
 
           <Link href="/saved" className={`p-2 rounded-lg transition ${isActive('/saved') ? 'text-red-500 bg-red-50' : 'text-gray-400 hover:text-red-500 hover:bg-gray-50'}`} title="Saved Colleges">
             <Heart size={16} />
+          </Link>
+
+          <Link href="/student/dashboard" className={`p-2 rounded-lg transition ${isActive('/student/dashboard') || isActive('/student/login') ? 'text-blue-600 bg-blue-50' : 'text-gray-400 hover:text-blue-600 hover:bg-gray-50'}`} title="Student Portal">
+            <User size={16} />
           </Link>
 
           <a href={`https://wa.me/${settings.whatsapp || '919876543210'}`} target="_blank"

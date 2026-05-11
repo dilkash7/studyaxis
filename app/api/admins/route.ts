@@ -6,7 +6,7 @@ import bcrypt from 'bcryptjs';
 
 export async function GET(req: NextRequest) {
   try {
-    const user = requireAuth(req);
+    const user = await requireAuth(req);
     if (!user) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     await connectDB();
     const admins = await Admin.find().select('-password').lean();
@@ -18,7 +18,7 @@ export async function GET(req: NextRequest) {
 
 export async function POST(req: NextRequest) {
   try {
-    const user = requireAuth(req);
+    const user = await requireAuth(req);
     if (!user || user.role !== 'superadmin') return NextResponse.json({ error: 'Forbidden' }, { status: 403 });
     await connectDB();
     const body = await req.json();

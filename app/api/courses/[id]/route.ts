@@ -3,6 +3,7 @@ import { connectDB } from '@/lib/mongodb';
 import Course from '@/models/Course';
 import { requireAuth } from '@/lib/auth';
 import { logAdminAction } from '@/lib/adminLog';
+import { sanitizeObjectIds } from '@/lib/objectId';
 
 export async function GET(_: NextRequest, { params }: { params: Promise<{ id: string }> }) {
   try {
@@ -23,7 +24,8 @@ export async function PUT(req: NextRequest, { params }: { params: Promise<{ id: 
     const { id } = await params;
     await connectDB();
     const body = await req.json();
-    const course = await Course.findByIdAndUpdate(id, body, { returnDocument: 'after' });
+    const cleanBody = sanitizeObjectIds(body, ['collegeId', 'campusId']);
+    const course = await Course.findByIdAndUpdate(id, cleanBody, { returnDocument: 'after' });
     await logAdminAction({ adminId: user.id, adminName: user.name, action: 'update', module: 'courses', description: `Updated course: ${course?.name}`, targetId: id });
     return NextResponse.json({ success: true, course });
   } catch (err) {

@@ -53,6 +53,16 @@ export default function CourseDetailPage() {
       const metaDesc = document.querySelector('meta[name="description"]');
       if (metaDesc) metaDesc.setAttribute('content', `Get details about ${courseData.name} at ${courseData.collegeName}. Check fee structure, eligibility, admission process, and more.`);
       
+      // Canonical enforcement
+      const canonicalUrl = `https://studyaxis.in/course/${courseData.slug || id}`;
+      let canonicalLink = document.querySelector('link[rel="canonical"]');
+      if (!canonicalLink) {
+        canonicalLink = document.createElement('link');
+        canonicalLink.setAttribute('rel', 'canonical');
+        document.head.appendChild(canonicalLink);
+      }
+      canonicalLink.setAttribute('href', canonicalUrl);
+      
     }).catch(() => setLoading(false));
   }, [id]);
 

@@ -63,6 +63,12 @@ export async function PUT(
     await connectDB();
 
     const data = await req.json();
+    if (!data.campusId) {
+      data.campusId = null;
+    }
+    if (!data.admissionCategory) {
+      data.admissionCategory = null;
+    }
 
     const student = await StudentRecord.findByIdAndUpdate(
       id,

@@ -1,6 +1,9 @@
 import mongoose from 'mongoose';
 
 const ApplicationSchema = new mongoose.Schema({
+  // Relational Link to Authenticated Student Portal
+  userId: { type: mongoose.Schema.Types.ObjectId, ref: 'User', index: true },
+  
   // Student info
   studentName: { type: String, required: true },
   email: { type: String },

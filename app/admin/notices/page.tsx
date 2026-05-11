@@ -21,7 +21,7 @@ export default function NoticesPage() {
   const [notices, setNotices] = useState<any[]>([]);
   const [showForm, setShowForm] = useState(false);
   const [editing, setEditing] = useState<any>(null);
-  const [form, setForm] = useState({ title: '', content: '', category: 'General', priority: 'normal', pinned: false, isActive: true, expiryDate: '' });
+  const [form, setForm] = useState({ title: '', content: '', category: 'General', priority: 'normal', pinned: false, isActive: true, expiryDate: '', targetEmails: '' });
 
   const token = typeof window !== 'undefined' ? localStorage.getItem('token') : '';
   const headers = { Authorization: `Bearer ${token}` };
@@ -29,22 +29,26 @@ export default function NoticesPage() {
   const load = () => axios.get('/api/notices', { headers }).then(r => setNotices(r.data));
   useEffect(() => { load(); }, []);
 
-  const resetForm = () => { setForm({ title: '', content: '', category: 'General', priority: 'normal', pinned: false, isActive: true, expiryDate: '' }); setEditing(null); setShowForm(false); };
+  const resetForm = () => { setForm({ title: '', content: '', category: 'General', priority: 'normal', pinned: false, isActive: true, expiryDate: '', targetEmails: '' }); setEditing(null); setShowForm(false); };
 
   const handleSubmit = async () => {
     if (!form.title || !form.content) return alert('Title and content required');
     try {
+      const payload = {
+        ...form,
+        targetEmails: form.targetEmails ? form.targetEmails.split(',').map(e => e.trim()).filter(Boolean) : []
+      };
       if (editing) {
-        await axios.put(`/api/notices/${editing._id}`, form, { headers });
+        await axios.put(`/api/notices/${editing._id}`, payload, { headers });
       } else {
-        await axios.post('/api/notices', form, { headers });
+        await axios.post('/api/notices', payload, { headers });
       }
       resetForm(); load();
     } catch { alert('Failed to save notice'); }
   };
 
   const handleEdit = (n: any) => {
-    setForm({ title: n.title, content: n.content, category: n.category, priority: n.priority, pinned: n.pinned, isActive: n.isActive, expiryDate: n.expiryDate ? new Date(n.expiryDate).toISOString().split('T')[0] : '' });
+    setForm({ title: n.title, content: n.content, category: n.category, priority: n.priority, pinned: n.pinned, isActive: n.isActive, expiryDate: n.expiryDate ? new Date(n.expiryDate).toISOString().split('T')[0] : '', targetEmails: n.targetEmails ? n.targetEmails.join(', ') : '' });
     setEditing(n); setShowForm(true);
   };
 
@@ -87,6 +91,7 @@ export default function NoticesPage() {
               </select>
             </div>
             <input type="date" value={form.expiryDate} onChange={e => setForm(f => ({ ...f, expiryDate: e.target.value }))} className={inp} placeholder="Expiry date (optional)" />
+            <input placeholder="Target Emails (comma separated, leave blank for global)" value={form.targetEmails} onChange={e => setForm(f => ({ ...f, targetEmails: e.target.value }))} className={inp} />
             <div className="flex items-center gap-4">
               <label className="flex items-center gap-2 text-sm"><input type="checkbox" checked={form.pinned} onChange={e => setForm(f => ({ ...f, pinned: e.target.checked }))} /> Pin to top</label>
               <label className="flex items-center gap-2 text-sm"><input type="checkbox" checked={form.isActive} onChange={e => setForm(f => ({ ...f, isActive: e.target.checked }))} /> Active</label>
@@ -114,6 +119,7 @@ export default function NoticesPage() {
                   <span className={`text-xs px-2 py-0.5 rounded-full font-medium ${PRIORITY_COLORS[n.priority] || PRIORITY_COLORS.normal}`}>{n.priority}</span>
                   <span className="text-xs text-gray-400">{new Date(n.publishDate || n.createdAt).toLocaleDateString()}</span>
                   {!n.isActive && <span className="text-xs text-red-500">Inactive</span>}
+                  {n.targetEmails && n.targetEmails.length > 0 && <span className="text-xs text-blue-500 font-bold bg-blue-50 px-2 py-0.5 rounded-full">Targeted ({n.targetEmails.length})</span>}
                 </div>
               </div>
               <div className="flex items-center gap-1 shrink-0">

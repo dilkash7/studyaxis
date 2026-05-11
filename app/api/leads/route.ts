@@ -24,11 +24,32 @@ export async function GET(req: NextRequest) {
   }
 }
 
+import { rateLimiter } from '@/lib/rateLimit';
+import { sendEmail } from '@/lib/email';
+
 export async function POST(req: NextRequest) {
   try {
+    // Prevent Lead Form Spam (Max 5 requests per minute per IP)
+    const rateLimitResponse = rateLimiter(req, 5);
+    if (rateLimitResponse) return rateLimitResponse;
+
     await connectDB();
     const body = await req.json();
     const lead = await Lead.create(body);
+
+    // Fire & Forget Welcome Email (non-blocking)
+    if (lead.email) {
+      sendEmail({
+        to: lead.email,
+        subject: 'Thank you for contacting StudyAxis!',
+        html: `<p>Hi ${lead.name || 'there'},</p>
+               <p>We have received your inquiry regarding <b>${lead.courseOfInterest || 'admissions'}</b>.</p>
+               <p>Our expert counselling team will review your profile and reach out to you at ${lead.phone || 'your registered number'} very soon.</p>
+               <br/>
+               <p>Best regards,<br/>The StudyAxis Team</p>`
+      }).catch(err => console.error('Welcome email failed:', err));
+    }
+
     return NextResponse.json({ success: true, lead });
   } catch (err: any) {
     console.error('Lead creation error:', err);

@@ -15,7 +15,7 @@ export async function GET() {
 
 export async function POST(req: NextRequest) {
   try {
-    const user = requireAuth(req);
+    const user = await requireAuth(req);
     if (!user) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     await connectDB();
     const body = await req.json();
@@ -28,7 +28,7 @@ export async function POST(req: NextRequest) {
 
 export async function PUT(req: NextRequest) {
   try {
-    const user = requireAuth(req);
+    const user = await requireAuth(req);
     if (!user) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     await connectDB();
     const { id, ...body } = await req.json();
@@ -41,7 +41,7 @@ export async function PUT(req: NextRequest) {
 
 export async function DELETE(req: NextRequest) {
   try {
-    const user = requireAuth(req);
+    const user = await requireAuth(req);
     if (!user) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     await connectDB();
     const { id } = await req.json();

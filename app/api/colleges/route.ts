@@ -20,6 +20,11 @@ export async function GET(req: NextRequest) {
     if (city) filter.city = { $regex: city, $options: 'i' };
     if (country) filter.country = { $regex: country, $options: 'i' };
     if (featured) filter.featured = true;
+    
+    // Strict Publish/Draft visibility system
+    if (searchParams.get('all') !== 'true') {
+      filter.active = true;
+    }
 
     const paginate = searchParams.get('paginate') === 'true';
     const total = paginate ? await College.countDocuments(filter) : 0;
@@ -47,7 +52,7 @@ import { generateSlug, generateSEO } from '@/lib/courseClassifier';
 
 export async function POST(req: NextRequest) {
   try {
-    const user = requireAuth(req);
+    const user = await requireAuth(req);
     if (!user) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     await connectDB();
     const body = await req.json();

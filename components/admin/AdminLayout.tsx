@@ -11,13 +11,26 @@ export default function AdminLayout({ children, title }: { children: React.React
 
   useEffect(() => {
     const token = localStorage.getItem('token');
-    if (!token) router.push('/admin/login');
-  }, []);
+    if (!token) {
+      router.push('/admin/login');
+      return;
+    }
+    // Strict session validation
+    fetch('/api/auth/me', { headers: { Authorization: `Bearer ${token}` } })
+      .then(res => {
+        if (!res.ok) {
+          localStorage.removeItem('token');
+          // We do not clear cookies here since it requires an API call, but redirecting to login will force them to re-authenticate
+          router.push('/admin/login');
+        }
+      })
+      .catch(() => {});
+  }, [router]);
 
   return (
-    <div className="flex min-h-screen bg-gray-50">
+    <div className="flex h-screen bg-gray-50 overflow-hidden">
       {/* Desktop Sidebar */}
-      <div className="hidden lg:block">
+      <div className="hidden lg:block h-full">
         <Sidebar />
       </div>
 

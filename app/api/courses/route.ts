@@ -4,13 +4,17 @@ import Course from '@/models/Course';
 import { requireAuth } from '@/lib/auth';
 import { logAdminAction } from '@/lib/adminLog';
 import { generateSlug, generateSEO } from '@/lib/courseClassifier';
+import { sanitizeObjectIds } from '@/lib/objectId';
 
 export async function GET(req: NextRequest) {
   try {
     await connectDB();
     const { searchParams } = new URL(req.url);
     const collegeId = searchParams.get('collegeId');
-    const filter: any = { active: true };
+    const filter: any = {};
+    if (searchParams.get('all') !== 'true') {
+      filter.active = true;
+    }
     if (collegeId) filter.collegeId = collegeId;
     const courses = await Course.find(filter).lean();
     return NextResponse.json(courses);
@@ -21,28 +25,29 @@ export async function GET(req: NextRequest) {
 
 export async function POST(req: NextRequest) {
   try {
-    const user = requireAuth(req);
+    const user = await requireAuth(req);
     if (!user) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     await connectDB();
     const body = await req.json();
+    const cleanBody = sanitizeObjectIds(body, ['collegeId', 'campusId']);
 
     // Use the new Master Normalization System to enforce canonical names
-    if (body.name) {
-      const classified = require('@/lib/courseClassifier').fullClassify(body.name);
-      body.rawName = body.name; // Keep history
-      body.name = classified.normalizedName || body.name;
+    if (cleanBody.name) {
+      const classified = require('@/lib/courseClassifier').fullClassify(cleanBody.name);
+      cleanBody.rawName = cleanBody.name; // Keep history
+      cleanBody.name = classified.normalizedName || cleanBody.name;
     }
 
     // Auto-generate slug + SEO if not provided
-    if (!body.slug && body.name) body.slug = generateSlug(`${body.collegeName || ''}-${body.name}`);
-    if (!body.metaTitle && body.name) {
-      const seo = generateSEO(body.collegeName || '', body.name);
-      body.metaTitle = seo.metaTitle;
-      body.metaDescription = seo.metaDescription;
-      body.metaKeywords = seo.keywords;
+    if (!cleanBody.slug && cleanBody.name) cleanBody.slug = generateSlug(`${cleanBody.collegeName || ''}-${cleanBody.name}`);
+    if (!cleanBody.metaTitle && cleanBody.name) {
+      const seo = generateSEO(cleanBody.collegeName || '', cleanBody.name);
+      cleanBody.metaTitle = seo.metaTitle;
+      cleanBody.metaDescription = seo.metaDescription;
+      cleanBody.metaKeywords = seo.keywords;
     }
 
-    const course = await Course.create(body);
+    const course = await Course.create(cleanBody);
     await logAdminAction({ adminId: user.id, adminName: user.name, action: 'create', module: 'courses', description: `Created course: ${body.name}`, targetId: course._id, targetName: body.name });
     
     // Automatically parse and attach Fee structure if provided

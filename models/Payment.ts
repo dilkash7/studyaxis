@@ -1,6 +1,10 @@
 import mongoose from 'mongoose';
 
 const PaymentSchema = new mongoose.Schema({
+  // Relational Links
+  userId: { type: mongoose.Schema.Types.ObjectId, ref: 'User', index: true },
+  applicationId: { type: mongoose.Schema.Types.ObjectId, ref: 'Application', index: true },
+  
   student: { type: String, required: true },
   phone: { type: String, required: true },
   email: { type: String },

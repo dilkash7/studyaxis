@@ -20,6 +20,7 @@ const NoticeSchema = new mongoose.Schema({
   college: { type: mongoose.Schema.Types.ObjectId, ref: 'College' },
   collegeName: { type: String },
   createdBy: { type: String },
+  targetEmails: [{ type: String }],
 }, { timestamps: true });
 
 NoticeSchema.index({ isActive: 1, publishDate: -1 });

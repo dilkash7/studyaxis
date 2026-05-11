@@ -35,8 +35,13 @@ export default function CoursesPage() {
   const [search, setSearch] = useState('');
   const [filterCategory, setFilterCategory] = useState('');
   const [autoDetect, setAutoDetect] = useState<any>(null);
-  const token = typeof window !== 'undefined' ? localStorage.getItem('token') : '';
+  const [token, setToken] = useState('');
   const headers = { Authorization: `Bearer ${token}` };
+
+  useEffect(() => {
+    const storedToken = localStorage.getItem('token');
+    if (storedToken) setToken(storedToken);
+  }, []);
 
   // Auto-classify when course name changes
   const handleNameChange = (name: string) => {

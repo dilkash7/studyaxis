@@ -40,7 +40,7 @@ export default function LeadsPage() {
   };
 
   const handleExport = () => {
-    window.open('/api/export', '_blank');
+    window.open('/api/export?module=leads&format=csv', '_blank');
   };
 
   return (

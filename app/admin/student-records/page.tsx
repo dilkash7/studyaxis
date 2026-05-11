@@ -4,6 +4,7 @@ import { useState, useEffect } from 'react';
 import { Plus, Edit2, Trash2, Loader, File, Search, X, Upload, CheckCircle, Clock, XCircle } from 'lucide-react';
 import axios from 'axios';
 import FileUploader from '@/components/ui/FileUploader';
+import AdminLayout from '@/components/admin/AdminLayout';
 
 const DOC_TYPES = [
   { value: 'aadhaar', label: 'Aadhaar Card' },
@@ -142,7 +143,8 @@ export default function StudentRecordsPage() {
   const inp = "w-full p-2.5 bg-white border border-gray-200 rounded-xl text-sm outline-none focus:ring-2 focus:ring-blue-500";
 
   return (
-    <div className="space-y-6">
+    <AdminLayout title="Admitted Students">
+      <div className="space-y-6">
       <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
         <div><h1 className="text-2xl font-bold text-gray-800">Admitted Students</h1><p className="text-sm text-gray-500">Manage student records & documents</p></div>
         <div className="flex items-center gap-3 w-full md:w-auto">
@@ -299,6 +301,7 @@ export default function StudentRecordsPage() {
           </div>
         </div>
       )}
-    </div>
+      </div>
+    </AdminLayout>
   );
 }

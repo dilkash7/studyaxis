@@ -28,12 +28,20 @@ export default function LocationsPage() {
   useEffect(() => { fetch(); }, []);
 
   const handleSave = async () => {
-    if (editId) {
-      await axios.put(`/api/locations/${editId}`, form, { headers });
-    } else {
-      await axios.post('/api/locations', form, { headers });
+    if (!form.name?.trim()) {
+      return alert('Location name is required');
     }
-    setModal(false); setForm(empty); setEditId(''); fetch();
+
+    try {
+      if (editId) {
+        await axios.put(`/api/locations/${editId}`, form, { headers });
+      } else {
+        await axios.post('/api/locations', form, { headers });
+      }
+      setModal(false); setForm(empty); setEditId(''); fetch();
+    } catch (error: any) {
+      alert(error.response?.data?.error || 'Error saving location');
+    }
   };
 
   const handleDelete = async () => {

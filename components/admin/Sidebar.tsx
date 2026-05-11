@@ -9,7 +9,7 @@ import {
   Building2, Image, FileText, Tags, GraduationCap,
   ChevronLeft, ChevronRight, Menu, Sparkles,
   Bell, Newspaper, HelpCircle, Award, MessageCircle,
-  ClipboardList,
+  ClipboardList, LineChart, ShieldAlert,
 } from 'lucide-react';
 import axios from 'axios';
 import { useRouter } from 'next/navigation';
@@ -21,6 +21,8 @@ interface AdminPayload {
 
 const allLinks = [
   { href: '/admin/dashboard', label: 'Dashboard', icon: LayoutDashboard, permission: 'dashboard' },
+  { href: '/admin/analytics', label: 'Analytics & Tracking', icon: LineChart, permission: null, superadminOnly: true },
+  { href: '/admin/audit-logs', label: 'Audit Logs', icon: ShieldAlert, permission: null, superadminOnly: true },
   { href: '/admin/colleges', label: 'Colleges', icon: School, permission: 'colleges' },
   { href: '/admin/campuses', label: 'Campuses', icon: Building2, permission: 'campuses' },
   { href: '/admin/courses', label: 'Courses', icon: BookOpen, permission: 'courses' },
@@ -44,6 +46,8 @@ const allLinks = [
   { href: '/admin/bulk-import', label: 'Bulk Import', icon: FileText, permission: null },
   { href: '/admin/payments', label: 'Payments', icon: DollarSign, permission: null },
   { href: '/admin/student-records', label: 'Students', icon: GraduationCap, permission: 'studentRecords', superadminOnly: true },
+  { href: '/admin/tickets', label: 'Support Tickets', icon: MessageSquare, permission: null },
+  { href: '/admin/users', label: 'Web Users', icon: Users, permission: null, superadminOnly: true },
   { href: '/admin/admins', label: 'Admin Team', icon: UserCog, permission: 'admins', superadminOnly: true },
   { href: '/admin/homepage', label: 'Homepage', icon: Home, permission: null },
   { href: '/admin/settings', label: 'Settings', icon: Settings, permission: 'settings' },
@@ -73,7 +77,7 @@ export default function Sidebar() {
     }
   }, []);
 
-  if (!mounted) return <aside className="w-64 min-h-screen bg-gray-900" />;
+  if (!mounted) return <aside className="w-64 h-full bg-gray-900" />;
 
   const toggleCollapse = () => {
     const next = !collapsed;
@@ -101,7 +105,7 @@ export default function Sidebar() {
   });
 
   return (
-    <aside className={`${collapsed ? 'w-[72px]' : 'w-64'} min-h-screen bg-gray-900 text-white flex flex-col transition-all duration-300 shrink-0 relative`}>
+    <aside className={`${collapsed ? 'w-[72px]' : 'w-64'} h-full bg-gray-900 text-white flex flex-col transition-all duration-300 shrink-0 relative`}>
       {/* Header */}
       <div className={`${collapsed ? 'px-3' : 'px-6'} py-5 border-b border-gray-700/50 flex items-center gap-3`}>
         {!collapsed && (

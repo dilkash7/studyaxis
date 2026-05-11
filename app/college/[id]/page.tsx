@@ -11,7 +11,7 @@ import Loader from '@/components/ui/Loader';
 import {
   MapPin, Star, Building2, BookOpen, ChevronRight, FileText,
   Download, Camera, DollarSign, GraduationCap, Home, ClipboardList,
-  Award, HelpCircle, ChevronDown, ExternalLink, Shield, MessageSquare,
+  Award, HelpCircle, ChevronDown, ExternalLink, Shield, MessageSquare, Heart
 } from 'lucide-react';
 
 const TAB_CONFIG = [
@@ -71,6 +71,10 @@ export default function CollegeDetailPage() {
   const [courseSearch, setCourseSearch] = useState('');
   const [courseTypeFilter, setCourseTypeFilter] = useState('all');
 
+  // Wishlist State
+  const [isSaved, setIsSaved] = useState(false);
+  const [saving, setSaving] = useState(false);
+
   // Review Form State
   const [showReviewForm, setShowReviewForm] = useState(false);
   const [reviewForm, setReviewForm] = useState({ name: '', rating: 5, content: '' });
@@ -125,9 +129,40 @@ export default function CollegeDetailPage() {
       setDetail(d.data);
       setReviews(Array.isArray(rv.data) ? rv.data : rv.data?.data || []);
       setScholarships(Array.isArray(sc.data) ? sc.data : sc.data?.data || []);
+      // Check if student has saved this college
+      const token = localStorage.getItem('studentToken');
+      if (token) {
+        axios.get('/api/student/dashboard', { headers: { Authorization: `Bearer ${token}` } })
+          .then(res => {
+            const saved = res.data.user?.savedColleges?.some((c: any) => c._id === realId);
+            setIsSaved(!!saved);
+          }).catch(() => {});
+      }
+
       setLoading(false);
     }).catch(() => setLoading(false));
   }, [id]);
+
+  const toggleSaveCollege = async () => {
+    const token = localStorage.getItem('studentToken');
+    if (!token) {
+      router.push('/student/login');
+      return;
+    }
+    setSaving(true);
+    try {
+      await axios.post('/api/student/save-college', {
+        collegeId: college._id,
+        action: isSaved ? 'remove' : 'save'
+      }, { headers: { Authorization: `Bearer ${token}` } });
+      setIsSaved(!isSaved);
+    } catch (err) {
+      alert('Failed to save college. Please log in again.');
+      router.push('/student/login');
+    } finally {
+      setSaving(false);
+    }
+  };
 
   const getSection = (type: string) =>
     detail?.sections?.find((s: any) => s.sectionType === type && s.active !== false);
@@ -156,6 +191,15 @@ export default function CollegeDetailPage() {
       setMeta('og:type', 'website');
       setMeta('og:url', `https://studyaxis.com/college/${college.slug || id}`);
       if (college.image) setMeta('og:image', college.image);
+      // Canonical enforcement
+      const canonicalUrl = `https://studyaxis.in/college/${college.slug || id}`;
+      let canonicalLink = document.querySelector('link[rel="canonical"]');
+      if (!canonicalLink) {
+        canonicalLink = document.createElement('link');
+        canonicalLink.setAttribute('rel', 'canonical');
+        document.head.appendChild(canonicalLink);
+      }
+      canonicalLink.setAttribute('href', canonicalUrl);
     }
   }, [college, id, router]);
 
@@ -242,6 +286,14 @@ export default function CollegeDetailPage() {
                 )}
                 <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/30 to-transparent" />
               </div>
+              <button 
+                onClick={toggleSaveCollege}
+                disabled={saving}
+                className="absolute top-4 right-4 bg-white/20 hover:bg-white/40 backdrop-blur-md p-3 rounded-full transition disabled:opacity-50"
+                title={isSaved ? "Remove from Saved" : "Save College"}
+              >
+                <Heart size={20} className={isSaved ? "text-red-500" : "text-white"} fill={isSaved ? "currentColor" : "none"} />
+              </button>
               <div className="absolute bottom-0 left-0 right-0 p-5 sm:p-6 text-white">
                 <div className="flex flex-wrap gap-2 mb-2">
                   {college.accreditation && (
@@ -271,7 +323,7 @@ export default function CollegeDetailPage() {
 
             {/* ── Sticky Action Bar ── */}
             <div className="sticky top-0 z-30 bg-white/95 backdrop-blur-md rounded-xl shadow-sm border border-gray-100 px-3 py-2.5 flex items-center gap-2 overflow-x-auto">
-              <Link href={`/apply?college=${encodeURIComponent(college.name)}`}
+              <Link href={`/student/apply/${college._id}`}
                 className="flex items-center gap-1.5 bg-green-600 text-white px-4 py-2 rounded-lg text-xs font-bold hover:bg-green-700 transition shrink-0">
                 <GraduationCap size={13} /> Apply Now
               </Link>

@@ -33,10 +33,10 @@ export default function AdminLogin() {
         </div>
         {error && <div className="bg-red-50 text-red-600 px-4 py-3 rounded-xl text-sm mb-4">{error}</div>}
         <form onSubmit={handleSubmit} className="space-y-4">
-          <input type="email" placeholder="Email Address" required
+          <input type="email" placeholder="Email Address" required suppressHydrationWarning
             value={form.email} onChange={(e) => setForm({ ...form, email: e.target.value })}
             className="w-full border border-gray-200 rounded-xl px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-green-400" />
-          <input type="password" placeholder="Password" required
+          <input type="password" placeholder="Password" required suppressHydrationWarning
             value={form.password} onChange={(e) => setForm({ ...form, password: e.target.value })}
             className="w-full border border-gray-200 rounded-xl px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-green-400" />
           <button type="submit" disabled={loading}
