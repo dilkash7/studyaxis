@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from 'next/server';
 import { connectDB } from '@/lib/mongodb';
 import Admin from '@/models/Admin';
 import { requireAuth } from '@/lib/auth';
+import { logAdminAction } from '@/lib/adminLog';
 
 export const dynamic = 'force-dynamic';
 
@@ -20,6 +21,17 @@ export async function GET(req: NextRequest) {
 
     // Strict Session Token Validation for Force Logout
     if (admin.sessionToken && userPayload.sessionToken !== admin.sessionToken) {
+      await logAdminAction({
+        adminId: admin._id,
+        adminName: admin.name,
+        adminEmail: admin.email,
+        action: 'auto_logout',
+        module: 'auth',
+        description: 'Session invalidated by force logout',
+        targetId: admin._id,
+        targetName: admin.name,
+        ipAddress: req.headers.get('x-forwarded-for') || req.headers.get('x-real-ip') || '',
+      });
       return NextResponse.json({ error: 'Session expired by Superadmin' }, { status: 401 });
     }
 

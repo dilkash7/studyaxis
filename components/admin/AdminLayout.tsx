@@ -1,6 +1,6 @@
 'use client';
 import { useEffect, useState } from 'react';
-import { useRouter } from 'next/navigation';
+import { useRouter, usePathname } from 'next/navigation';
 import { Menu, X } from 'lucide-react';
 import Sidebar from './Sidebar';
 import TopBar from './TopBar';
@@ -9,23 +9,35 @@ export default function AdminLayout({ children, title }: { children: React.React
   const router = useRouter();
   const [mobileOpen, setMobileOpen] = useState(false);
 
+  const pathname = usePathname();
+
   useEffect(() => {
-    const token = localStorage.getItem('token');
-    if (!token) {
-      router.push('/admin/login');
-      return;
-    }
-    // Strict session validation
-    fetch('/api/auth/me', { headers: { Authorization: `Bearer ${token}` } })
-      .then(res => {
-        if (!res.ok) {
+    let cancelled = false;
+    const checkSession = async () => {
+      const token = localStorage.getItem('token');
+      if (!token) {
+        window.localStorage.removeItem('token');
+        router.push('/admin/login');
+        return;
+      }
+      try {
+        const res = await fetch('/api/auth/me', { headers: { Authorization: `Bearer ${token}` } });
+        if (!res.ok && !cancelled) {
           localStorage.removeItem('token');
-          // We do not clear cookies here since it requires an API call, but redirecting to login will force them to re-authenticate
           router.push('/admin/login');
         }
-      })
-      .catch(() => {});
-  }, [router]);
+      } catch {
+        if (!cancelled) {
+          localStorage.removeItem('token');
+          router.push('/admin/login');
+        }
+      }
+    };
+
+    checkSession();
+    const interval = setInterval(checkSession, 60_000);
+    return () => { cancelled = true; clearInterval(interval); };
+  }, [router, pathname]);
 
   return (
     <div className="flex h-screen bg-gray-50 overflow-hidden">

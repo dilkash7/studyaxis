@@ -1,5 +1,5 @@
 'use client';
-import { useState } from 'react';
+import { useState, type FormEvent } from 'react';
 import { useRouter } from 'next/navigation';
 import axios from 'axios';
 import Link from 'next/link';
@@ -10,16 +10,19 @@ export default function StudentLogin() {
   const [loading, setLoading] = useState(false);
   const router = useRouter();
 
-  const handleSubmit = async (e: React.FormEvent) => {
+  const handleSubmit = async (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     setLoading(true);
     setError('');
     try {
-      const res = await axios.post('/api/student/auth', { action: 'login', ...form });
+      const res = await axios.post('/api/student/auth', { action: 'login', ...form }, {
+        headers: { 'Content-Type': 'application/json' },
+        withCredentials: true,
+      });
       localStorage.setItem('studentToken', res.data.token);
       router.push('/student/dashboard');
     } catch (err: any) {
-      setError(err.response?.data?.error || 'Invalid credentials');
+      setError(err.response?.data?.error || err.message || 'Invalid credentials');
     } finally {
       setLoading(false);
     }

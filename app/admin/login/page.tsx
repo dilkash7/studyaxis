@@ -1,5 +1,5 @@
 'use client';
-import { useState } from 'react';
+import { useState, type FormEvent } from 'react';
 import { useRouter } from 'next/navigation';
 import axios from 'axios';
 
@@ -9,16 +9,19 @@ export default function AdminLogin() {
   const [loading, setLoading] = useState(false);
   const router = useRouter();
 
-  const handleSubmit = async (e: React.FormEvent) => {
+  const handleSubmit = async (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     setLoading(true);
     setError('');
     try {
-      const res = await axios.post('/api/auth', form);
+      const res = await axios.post('/api/auth', form, {
+        headers: { 'Content-Type': 'application/json' },
+        withCredentials: true,
+      });
       localStorage.setItem('token', res.data.token);
       router.push('/admin/dashboard');
-    } catch {
-      setError('Invalid email or password');
+    } catch (err: any) {
+      setError(err.response?.data?.error || err.message || 'Invalid email or password');
     } finally {
       setLoading(false);
     }

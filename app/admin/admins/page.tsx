@@ -12,6 +12,8 @@ const empty = { name: '', email: '', password: '', role: 'admin', permissions: [
 const ACTION_COLORS: Record<string, string> = {
   login: 'bg-green-100 text-green-700',
   logout: 'bg-gray-100 text-gray-700',
+  force_logout: 'bg-orange-100 text-orange-700',
+  auto_logout: 'bg-amber-100 text-amber-700',
   create: 'bg-blue-100 text-blue-700',
   update: 'bg-yellow-100 text-yellow-700',
   delete: 'bg-red-100 text-red-700',
@@ -167,7 +169,7 @@ export default function AdminsPage() {
             <select value={logFilter.action} onChange={e => setLogFilter({ ...logFilter, action: e.target.value })}
               className="border border-gray-200 rounded-xl px-3 py-2 text-sm bg-white">
               <option value="">All Actions</option>
-              {['login', 'logout', 'create', 'update', 'delete', 'upload', 'export'].map(a => (
+              {['login', 'logout', 'force_logout', 'auto_logout', 'create', 'update', 'delete', 'upload', 'export'].map(a => (
                 <option key={a} value={a}>{a}</option>
               ))}
             </select>
